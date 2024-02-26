@@ -20,7 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ProducModel {
+public class ProductModel {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
