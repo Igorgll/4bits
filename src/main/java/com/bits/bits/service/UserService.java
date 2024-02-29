@@ -26,6 +26,7 @@ public class UserService {
             return Optional.empty();
         }
 
+        user.setActive(true);
         LOGGER.info("User successfully signed");
 
         return Optional.of(userRepository.save(user));

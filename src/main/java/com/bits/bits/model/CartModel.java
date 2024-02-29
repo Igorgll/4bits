@@ -31,7 +31,7 @@ public class CartModel {
 
     @ManyToOne
     @NotBlank(message = "Attribute productID cannot be null")
-    private ProducModel producModel; 
+    private ProductModel productModel;
 
     @NotBlank(message = "Attribute quantity cannot be null")
     private int quantity;

@@ -47,4 +47,7 @@ public class UserModel {
 
     @NotNull
     private boolean admin;
+
+    @NotNull
+    private boolean isActive;
 }
