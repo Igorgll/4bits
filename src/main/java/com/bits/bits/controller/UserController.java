@@ -58,8 +58,8 @@ public class UserController {
                .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<List<UserModel>> getUserByName(@PathVariable String name) {
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<UserModel>> getUserByName(@PathVariable(value = "name") String name) {
         List<UserModel> users = userRepository.findByNameContainingIgnoreCase(name);
         if (users.isEmpty()) {
             return ResponseEntity.notFound().build();
