@@ -26,16 +26,16 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity <List<UserModel>> getAllUsers(){
+    public ResponseEntity<List<UserModel>> getAllUsers() {
         List<UserModel> userModelList = userRepository.findAll();
-        if (!userModelList.isEmpty()){
+        if (!userModelList.isEmpty()) {
             return ResponseEntity.ok(userModelList);
         }
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/listUsersBasicInfo")
-    public ResponseEntity <List<UserDTO>> getAllUsersBasicInfo() {
+    public ResponseEntity<List<UserDTO>> getAllUsersBasicInfo() {
         List<UserModel> userList = userRepository.findAll();
         if (!userList.isEmpty()) {
             List<UserDTO> userDTOS = FourBitsUtils.convertModelToUserDTO(userList);
@@ -48,13 +48,33 @@ public class UserController {
     public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {
         return userService.userSignUp(user)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
-                .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+
+
+    @PutMapping("/updateUser")
+    public ResponseEntity<UserModel> atualizarUser (@Valid @RequestBody UserModel user) {
+        return userService.updateUser(user)
+                .map(resp -> ResponseEntity.status(HttpStatus.OK)
+                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PatchMapping("/isUserActive/{userId}/{isActive}")
-    public ResponseEntity<UserModel> isUserActive (@PathVariable Long userId, @PathVariable boolean isActive) {
-       return userService.changeIsUserActive(userId, isActive)
-               .map(resp -> ResponseEntity.status(HttpStatus.OK)
-               .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    public ResponseEntity<UserModel> isUserActive(@PathVariable Long userId, @PathVariable boolean isActive) {
+        return userService.changeIsUserActive(userId, isActive)
+                .map(resp -> ResponseEntity.status(HttpStatus.OK)
+                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<UserModel>> getUserByName(@PathVariable(value = "name") String name) {
+        List<UserModel> users = userRepository.findByNameContainingIgnoreCase(name);
+        if (users.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(users);
+    }
+
+
 }
