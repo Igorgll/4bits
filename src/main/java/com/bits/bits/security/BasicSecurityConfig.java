@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -35,11 +36,13 @@ public class BasicSecurityConfig {
                                 .sessionManagement(management -> management
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .csrf(csrf -> csrf.disable())
+                                .headers((headers) -> headers.disable())
                                 .cors(withDefaults());
 
                 http
                                 .authorizeHttpRequests((auth) -> auth
-                                                .requestMatchers("/api/v1/users/**").permitAll()
+                                                .requestMatchers("/api/v1/users/**")
+                                                .permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                                 .anyRequest().permitAll())
                                 .httpBasic(withDefaults());

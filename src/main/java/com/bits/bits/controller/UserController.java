@@ -58,8 +58,6 @@ public class UserController {
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
-
-
     @PutMapping("/updateUser")
     public ResponseEntity<UserModel> atualizarUser (@Valid @RequestBody UserModel user) {
         return userService.updateUser(user)
@@ -91,6 +89,4 @@ public class UserController {
             return new ResponseEntity<>("User Login Successfully!.", HttpStatus.OK);
         
     }
-
-
 }
