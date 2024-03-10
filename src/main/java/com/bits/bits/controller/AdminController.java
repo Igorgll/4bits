@@ -1,12 +1,11 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.UserDTO;
-import com.bits.bits.model.UserModel;
-import com.bits.bits.repository.UserRepository;
-import com.bits.bits.service.UserService;
+import com.bits.bits.model.AdminModel;
+import com.bits.bits.repository.AdminRepository;
+import com.bits.bits.service.AdminService;
 import com.bits.bits.utils.FourBitsUtils;
 import jakarta.validation.Valid;
-import org.h2.engine.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +20,20 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class UserController {
+public class AdminController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserRepository userRepository;
+    private AdminRepository userRepository;
 
     @Autowired
-    private UserService userService;
+    private AdminService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserModel>> getAllUsers() {
-        List<UserModel> userModelList = userRepository.findAll();
+    public ResponseEntity<List<AdminModel>> getAllUsers() {
+        List<AdminModel> userModelList = userRepository.findAll();
         if (!userModelList.isEmpty()) {
             return ResponseEntity.ok(userModelList);
         }
@@ -43,7 +42,7 @@ public class UserController {
 
     @GetMapping("/listUsersBasicInfo")
     public ResponseEntity<List<UserDTO>> getAllUsersBasicInfo() {
-        List<UserModel> userList = userRepository.findAll();
+        List<AdminModel> userList = userRepository.findAll();
         if (!userList.isEmpty()) {
             List<UserDTO> userDTOS = FourBitsUtils.convertModelToUserDTO(userList);
             return ResponseEntity.ok(userDTOS);
@@ -52,29 +51,29 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {
+    public ResponseEntity<AdminModel> createAdmin(@Valid @RequestBody AdminModel user) {
         return userService.userSignUp(user)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PutMapping("/updateUser")
-    public ResponseEntity<UserModel> atualizarUser (@Valid @RequestBody UserModel user) {
+    public ResponseEntity<AdminModel> updateUser(@Valid @RequestBody AdminModel user) {
         return userService.updateUser(user)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PatchMapping("/isUserActive/{userId}/{isActive}")
-    public ResponseEntity<UserModel> isUserActive(@PathVariable Long userId, @PathVariable boolean isActive) {
+    public ResponseEntity<AdminModel> isUserActive(@PathVariable Long userId, @PathVariable boolean isActive) {
         return userService.changeIsUserActive(userId, isActive)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<UserModel>> getUserByName(@PathVariable(value = "name") String name) {
-        List<UserModel> users = userRepository.findByNameContainingIgnoreCase(name);
+    public ResponseEntity<List<AdminModel>> getUserByName(@PathVariable(value = "name") String name) {
+        List<AdminModel> users = userRepository.findByNameContainingIgnoreCase(name);
         if (users.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

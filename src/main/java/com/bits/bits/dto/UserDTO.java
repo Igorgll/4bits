@@ -20,7 +20,7 @@ public class UserDTO {
     private String password;
 
     @NotNull
-    private boolean admin;
+    private String group;
 
     @NotNull
     private boolean isActive;

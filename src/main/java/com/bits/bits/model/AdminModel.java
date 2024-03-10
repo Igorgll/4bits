@@ -1,10 +1,6 @@
 package com.bits.bits.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,16 +13,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_user")
+@Table(name = "tb_admin")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserModel {
+public class AdminModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private long adminId;
 
     @Email(message = "Email must be in the right format")
     @NotBlank(message = "Email cannot be null")
@@ -46,7 +42,8 @@ public class UserModel {
     private String password;
 
     @NotNull
-    private boolean admin;
+    @Column(name = "group_name")
+    private String group;
 
     @NotNull
     private boolean isActive;

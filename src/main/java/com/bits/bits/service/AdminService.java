@@ -1,30 +1,28 @@
 package com.bits.bits.service;
 
-import com.bits.bits.model.UserModel;
-import com.bits.bits.repository.UserRepository;
+import com.bits.bits.model.AdminModel;
+import com.bits.bits.repository.AdminRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class AdminService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminService.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private AdminRepository adminRepository;
 
-    public Optional<UserModel> userSignUp(UserModel user) {
+    public Optional<AdminModel> userSignUp(AdminModel user) {
 
-        Optional<UserModel> findUser = userRepository.findUserByEmail(user.getEmail());
+        Optional<AdminModel> findUser = adminRepository.findUserByEmail(user.getEmail());
 
         if (findUser.isPresent()) {
             LOGGER.info("User already exists");
@@ -38,32 +36,32 @@ public class UserService {
         user.setActive(true);
         LOGGER.info("User successfully registered");
 
-        return Optional.of(userRepository.save(user));
+        return Optional.of(adminRepository.save(user));
     }
 
-    public Optional<UserModel> changeIsUserActive(Long userId, boolean isActive) {
-        Optional<UserModel> optionalUser = userRepository.findById(userId);
+    public Optional<AdminModel> changeIsUserActive(Long userId, boolean isActive) {
+        Optional<AdminModel> optionalUser = adminRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
-            UserModel user = optionalUser.get();
+            AdminModel user = optionalUser.get();
             user.setActive(isActive);
             LOGGER.info("User status successfully changed");
-            return Optional.of(userRepository.save(user));
+            return Optional.of(adminRepository.save(user));
         }
         return Optional.empty();
     }
 
-    public Optional<UserModel> updateUser(UserModel user) {
+    public Optional<AdminModel> updateUser(AdminModel user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (userRepository.findById(user.getUserId()).isPresent()) {
-            Optional<UserModel> findUser = userRepository.findUserByEmail(user.getName());
+        if (adminRepository.findById(user.getAdminId()).isPresent()) {
+            Optional<AdminModel> findUser = adminRepository.findUserByEmail(user.getName());
             if (findUser.isPresent()) {
-                if (findUser.get().getUserId() != user.getUserId())
+                if (findUser.get().getAdminId() != user.getAdminId())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
             }
             user.setPassword(encoder.encode(user.getPassword()));
-            return Optional.of(userRepository.save(user));
+            return Optional.of(adminRepository.save(user));
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
