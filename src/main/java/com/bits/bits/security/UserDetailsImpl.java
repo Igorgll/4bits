@@ -3,11 +3,10 @@ package com.bits.bits.security;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.annotations.CollectionId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.bits.bits.model.UserModel;
+import com.bits.bits.model.AdminModel;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -17,7 +16,7 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private List<GrantedAuthority> authories;
 
-    public UserDetailsImpl(UserModel user) {
+    public UserDetailsImpl(AdminModel user) {
         this.userName = user.getEmail();
         this.password = user.getPassword();
     }

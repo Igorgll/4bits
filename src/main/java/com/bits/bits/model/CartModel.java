@@ -19,7 +19,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class CartModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +26,7 @@ public class CartModel {
 
     @OneToOne
     @NotBlank(message = "Attribute userID cannot be null")
-    private UserModel userModel;
+    private AdminModel adminModel;
 
     @ManyToOne
     @NotBlank(message = "Attribute productID cannot be null")
