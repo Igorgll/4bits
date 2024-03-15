@@ -1,6 +1,7 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.UserDTO;
+import com.bits.bits.dto.UserUpdateRequestDTO;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import com.bits.bits.service.AdminService;
@@ -57,9 +58,10 @@ public class AdminController {
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
-    @PutMapping("/updateUser")
-    public ResponseEntity<AdminModel> updateUser(@Valid @RequestBody AdminModel user) {
-        return userService.updateUser(user)
+    @PutMapping("/updateUser/{userId}")
+    public ResponseEntity<AdminModel> updateUser(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequestDTO user) {
+        // não deixar alterar o email
+        return userService.updateUser(userId, user)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }

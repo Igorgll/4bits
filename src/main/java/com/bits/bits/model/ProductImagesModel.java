@@ -6,15 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Table(name = "tb_product_images")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductImages {
+public class ProductImagesModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
