@@ -1,15 +1,8 @@
 package com.bits.bits.model;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -40,10 +33,11 @@ public class ProductModel {
     @NotNull(message = "Attribute price cannot be null")
     @DecimalMin(value = "0.0", inclusive = false)
     private double price;
-    
-    @NotEmpty(message = "Attribute picture cannot be null")
+
     @ElementCollection
-    private List<String> pictures;
+    @CollectionTable(name = "tb_product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_path")
+    private List<String> productImages;
 
     @NotBlank(message = "Attribute description cannot be null")
     @Size(max = 2000, message = "Attribute productname can have at maximum 200 characters")

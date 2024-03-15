@@ -1,17 +1,14 @@
 package com.bits.bits.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bits.bits.model.ProductModel;
 import com.bits.bits.repository.ProductRepository;
@@ -20,7 +17,7 @@ import com.bits.bits.service.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProductController {
 
@@ -34,7 +31,25 @@ public class ProductController {
     public ResponseEntity<List<ProductModel>> getAllProducts() {
         List<ProductModel> productsList = productRepository.findAll();
         if(!productsList.isEmpty()) {
-            ResponseEntity.ok(productsList);
+            return ResponseEntity.ok(productsList);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/productId/{productId}")
+    public ResponseEntity<List<ProductModel>> getImagesByProductId(@PathVariable long productId) {
+        List<ProductModel> productsListById = productRepository.findAllById(Collections.singleton(productId));
+        if(!productsListById.isEmpty()) {
+            return ResponseEntity.ok(productsListById);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/productName/{productName}")
+    public ResponseEntity<List<ProductModel>> getAllProductsByName(@PathVariable String productName) {
+        List<ProductModel> productsListByName = productRepository.findAllByProductNameContainingIgnoreCase(productName);
+        if(!productsListByName.isEmpty()) {
+            return ResponseEntity.ok(productsListByName);
         }
         return ResponseEntity.noContent().build();
     }

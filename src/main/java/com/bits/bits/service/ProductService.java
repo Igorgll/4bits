@@ -19,7 +19,14 @@ public class ProductService {
         private ProductRepository productRepository;
 
         public Optional<ProductModel> createProduct(ProductModel product) {
-            LOGGER.info("Product sucessfully created");
+            boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(product.getProductName());
+
+            if (findProduct){
+               LOGGER.info("Product already registered");
+               return Optional.empty();
+            }
+
+            LOGGER.info("Product successfully created");
             return Optional.of(productRepository.save(product));
         }
 }

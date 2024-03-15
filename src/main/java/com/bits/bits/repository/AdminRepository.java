@@ -12,6 +12,4 @@ public interface AdminRepository extends JpaRepository<AdminModel, Long> {
     Optional<AdminModel> findUserByEmail(String email);
 
     List<AdminModel> findByNameContainingIgnoreCase(String name);
-
-
 }
