@@ -1,7 +1,10 @@
 package com.bits.bits.service;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.bits.bits.model.ProductImagesModel;
+import com.bits.bits.repository.ProductImagesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,9 @@ public class ProductService {
         @Autowired
         private ProductRepository productRepository;
 
+        @Autowired
+        private ProductImagesRepository productImagesRepository;
+
         public Optional<ProductModel> createProduct(ProductModel product) {
             boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(product.getProductName());
 
@@ -26,7 +32,16 @@ public class ProductService {
                return Optional.empty();
             }
 
+            ProductModel savedProduct = productRepository.save(product);
+
+            List<ProductImagesModel> images = product.getProductImages();
+            for (ProductImagesModel image : images) {
+                image.setProduct(savedProduct);
+            }
+
+            productImagesRepository.saveAll(images);
+
             LOGGER.info("Product successfully created");
-            return Optional.of(productRepository.save(product));
+            return Optional.of(savedProduct);
         }
 }
