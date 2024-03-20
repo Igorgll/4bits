@@ -3,7 +3,9 @@ package com.bits.bits.controller;
 import java.util.Collections;
 import java.util.List;
 
+import com.bits.bits.dto.ProductImageProjection;
 import com.bits.bits.model.ProductImagesModel;
+import com.bits.bits.repository.ProductImagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductImagesRepository productImagesRepository;
 
     @Autowired
     private ProductService productService;
@@ -49,6 +54,15 @@ public class ProductController {
         List<ProductModel> productsListByName = productRepository.findAllByProductNameContainingIgnoreCase(productName);
         if(!productsListByName.isEmpty()) {
             return ResponseEntity.ok(productsListByName);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/productImage/{productId}")
+    public ResponseEntity<List<ProductImageProjection>> getAllImagesByProductId(@PathVariable long productId) {
+        List<ProductImageProjection> productsImagesList = productImagesRepository.findProductImagesByProductId(productId);
+        if(!productsImagesList.isEmpty()) {
+            return ResponseEntity.ok(productsImagesList);
         }
         return ResponseEntity.noContent().build();
     }
