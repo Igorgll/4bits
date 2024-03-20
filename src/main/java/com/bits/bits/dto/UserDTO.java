@@ -5,23 +5,21 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
 @Getter
 @Setter
 public class UserDTO {
 
-    @NotNull
+    private long userId;
+
     private String name;
 
-    @NotNull
     private String email;
 
-    @NotNull
+    private String cpf;
+
     private String password;
 
-    @NotNull
     private String group;
 
-    @NotNull
     private boolean isActive;
 }

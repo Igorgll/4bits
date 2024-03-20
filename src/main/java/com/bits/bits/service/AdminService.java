@@ -1,6 +1,5 @@
 package com.bits.bits.service;
 
-import com.bits.bits.dto.UserUpdateRequestDTO;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import org.slf4j.Logger;
@@ -51,7 +50,7 @@ public class AdminService {
         return Optional.empty();
     }
 
-    public Optional<AdminModel> updateUser(Long userId, UserUpdateRequestDTO userUpdateRequestDTO) {
+    public Optional<AdminModel> updateUser(Long userId, AdminModel userUpdateRequestDTO) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Optional<AdminModel> findUserById = adminRepository.findById(userId);
         if (findUserById.isPresent()) {
