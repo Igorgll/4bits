@@ -10,19 +10,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.bits.bits.model.UserModel;
-import com.bits.bits.repository.UserRepository;
+import com.bits.bits.model.AdminModel;
+import com.bits.bits.repository.AdminRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Autowired
-	private UserRepository userRepository;
+	private AdminRepository userRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-		Optional<UserModel> usuario = userRepository.findUserByEmail(userName);
+		Optional<AdminModel> usuario = userRepository.findUserByEmail(userName);
 
 		if (usuario.isPresent())
 			return new UserDetailsImpl(usuario.get());
