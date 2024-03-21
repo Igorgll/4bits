@@ -59,10 +59,12 @@ public class AdminController {
     }
 
     @PutMapping("/updateUser/{userId}")
-    public ResponseEntity<AdminModel> updateUser(@PathVariable Long userId, @Valid @RequestBody AdminModel user) {
-        return userService.updateUser(userId, user)
-                .map(resp -> ResponseEntity.status(HttpStatus.OK)
-                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    public ResponseEntity<AdminModel> updateUser(@PathVariable long userId, @Valid @RequestBody AdminModel user) {
+        AdminModel updateUser = userService.updateUser(userId, user);
+        if(updateUser != null) {
+            return ResponseEntity.ok(updateUser);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @PatchMapping("/isUserActive/{userId}/{isActive}")
