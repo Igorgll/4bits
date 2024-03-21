@@ -1,7 +1,6 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.UserDTO;
-import com.bits.bits.dto.UserUpdateRequestDTO;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import com.bits.bits.service.AdminService;
@@ -17,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -59,10 +59,12 @@ public class AdminController {
     }
 
     @PutMapping("/updateUser/{userId}")
-    public ResponseEntity<AdminModel> updateUser(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequestDTO user) {
-        return userService.updateUser(userId, user)
-                .map(resp -> ResponseEntity.status(HttpStatus.OK)
-                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    public ResponseEntity<AdminModel> updateUser(@PathVariable long userId, @Valid @RequestBody AdminModel user) {
+        AdminModel updateUser = userService.updateUser(userId, user);
+        if(updateUser != null) {
+            return ResponseEntity.ok(updateUser);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @PatchMapping("/isUserActive/{userId}/{isActive}")
@@ -79,6 +81,15 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<Optional<AdminModel>> getUserById(@PathVariable long userId) {
+        Optional<AdminModel> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/login")

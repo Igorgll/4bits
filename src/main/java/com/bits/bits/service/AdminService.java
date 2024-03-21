@@ -1,6 +1,5 @@
 package com.bits.bits.service;
 
-import com.bits.bits.dto.UserUpdateRequestDTO;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import org.slf4j.Logger;
@@ -51,24 +50,22 @@ public class AdminService {
         return Optional.empty();
     }
 
-    public Optional<AdminModel> updateUser(Long userId, UserUpdateRequestDTO userUpdateRequestDTO) {
+    public AdminModel updateUser(long userId, AdminModel adminModel) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Optional<AdminModel> findUserById = adminRepository.findById(userId);
-        if (findUserById.isPresent()) {
-            AdminModel user = findUserById.get();
+        Optional<AdminModel> findUser = adminRepository.findById(userId);
+        if (findUser.isPresent()) {
+            AdminModel existingUser = findUser.get();
 
-            if (userUpdateRequestDTO.getName() != null) {
-                user.setName(userUpdateRequestDTO.getName());
-            }
-            if (userUpdateRequestDTO.getPassword() != null) {
-                user.setPassword(encoder.encode(userUpdateRequestDTO.getPassword()));
-            }
-            if (userUpdateRequestDTO.getGroup() != null) {
-                user.setGroup(userUpdateRequestDTO.getGroup());
-            }
+            existingUser.setEmail(adminModel.getEmail());
+            existingUser.setName(adminModel.getName());
+            existingUser.setCpf(adminModel.getCpf());
+            existingUser.setPassword(encoder.encode(adminModel.getPassword()));
+            existingUser.setGroup(adminModel.getGroup());
+            existingUser.setActive(true);
 
-            return Optional.of(adminRepository.save(user));
+            return adminRepository.save(existingUser);
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        return null;
     }
+
 }
