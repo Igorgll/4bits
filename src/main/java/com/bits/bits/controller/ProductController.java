@@ -3,16 +3,24 @@ package com.bits.bits.controller;
 import java.util.Collections;
 import java.util.List;
 
-import com.bits.bits.dto.ProductImageProjection;
-import com.bits.bits.dto.ProductUpdateRequestDTO;
-import com.bits.bits.model.ProductImagesModel;
-import com.bits.bits.repository.ProductImagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.bits.bits.dto.ProductImageProjection;
+import com.bits.bits.dto.ProductStatusDTO;
+import com.bits.bits.dto.ProductUpdateRequestDTO;
 import com.bits.bits.model.ProductModel;
+import com.bits.bits.repository.ProductImagesRepository;
 import com.bits.bits.repository.ProductRepository;
 import com.bits.bits.service.ProductService;
 
@@ -72,6 +80,16 @@ public class ProductController {
     @PostMapping("/createProduct")
     public ResponseEntity<ProductModel> createProduct(@Valid @RequestBody ProductModel product) {
         return productService.createProduct(product)
+                .map(resp -> ResponseEntity.status(HttpStatus.OK)
+                        .body(resp))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @PatchMapping("/isProductActive/status")
+    public ResponseEntity<ProductModel> isProductActive(@RequestBody ProductStatusDTO productStatus) {
+        Long productId = productStatus.getProductId();
+        boolean isActive = productStatus.isActive();
+        return productService.changeProductStatus(productId, isActive)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());

@@ -65,4 +65,16 @@ public class ProductService {
         });
     }
 
+    public Optional<ProductModel> changeProductStatus(Long productId, boolean isActive) {
+        Optional<ProductModel> optProduct = productRepository.findById(productId);
+
+        if (optProduct.isPresent()) {
+            ProductModel product = optProduct.get();
+            product.setActive(isActive);
+            LOGGER.info("Product status altered successfully");
+            return Optional.of(productRepository.save(product));
+        }
+        return Optional.empty();
+    }
+
 }

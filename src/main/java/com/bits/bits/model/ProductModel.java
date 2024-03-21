@@ -48,4 +48,7 @@ public class ProductModel {
     @NotNull
     private int storage;
 
+    @NotNull
+    private boolean isActive;
+
 }
