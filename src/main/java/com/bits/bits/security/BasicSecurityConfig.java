@@ -41,11 +41,12 @@ public class BasicSecurityConfig {
 
                 http
                                 .authorizeHttpRequests((auth) -> auth
-                                                .requestMatchers("/api/v1/users/**")
+                                                .requestMatchers("/api/v1/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                                 .anyRequest().permitAll())
                                 .httpBasic(withDefaults());
+
 
                 return http.build();
 

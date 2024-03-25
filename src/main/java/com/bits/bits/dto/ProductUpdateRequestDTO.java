@@ -14,6 +14,6 @@ public class ProductUpdateRequestDTO {
     private String description;
     private Integer storage;
     // implementar quando tiver a função de adicionar imagens
-    // private List<String> productImages;
+    //private List<String> productImages;
 
 }
