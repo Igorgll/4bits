@@ -1,5 +1,6 @@
 package com.bits.bits.infra;
 
+import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.NoContentException;
 import com.bits.bits.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -21,4 +22,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @ExceptionHandler(CannotAccessException.class)
+    private ResponseEntity<String> cannotAccessException(CannotAccessException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot access this resource.");
+    }
 }

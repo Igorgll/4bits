@@ -1,6 +1,7 @@
 package com.bits.bits.service;
 
 import com.bits.bits.dto.UserDTO;
+import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.NoContentException;
 import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,7 +32,7 @@ public class AdminService {
 
         if (findUser.isPresent()) {
             LOGGER.info("User already exists");
-            return Optional.empty();
+            throw new CannotAccessException();
         }
 
         BCryptPasswordEncoder criptografar = new BCryptPasswordEncoder();
@@ -60,21 +62,21 @@ public class AdminService {
         return usersList;
     }
 
-    public Optional<AdminModel> changeIsUserActive(Long userId, boolean isActive) {
+    public ResponseEntity<AdminModel> changeIsUserActive(Long userId, boolean isActive) {
         Optional<AdminModel> optionalUser = adminRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
             AdminModel user = optionalUser.get();
             user.setActive(isActive);
             LOGGER.info("User status successfully changed");
-            return Optional.of(adminRepository.save(user));
+            return ResponseEntity.ok(adminRepository.save(user));
         } else {
             LOGGER.error("User not found with ID: " + userId);
-            return Optional.empty();
+            throw new UserNotFoundException();
         }
     }
 
-    public AdminModel updateUser(long userId, AdminModel adminModel) {
+    public ResponseEntity<AdminModel> updateUser(long userId, AdminModel adminModel) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Optional<AdminModel> findUser = adminRepository.findById(userId);
         if (findUser.isPresent()) {
@@ -87,9 +89,9 @@ public class AdminService {
             existingUser.setGroup(adminModel.getGroup());
             existingUser.setActive(true);
 
-            return adminRepository.save(existingUser);
+            return ResponseEntity.ok(adminRepository.save(existingUser));
         }
-        return null;
+        return ResponseEntity.badRequest().build();
     }
 
     public Optional<AdminModel> findUserById(long userId) {

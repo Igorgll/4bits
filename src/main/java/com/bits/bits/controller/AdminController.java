@@ -1,13 +1,10 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.UserDTO;
-import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import com.bits.bits.service.AdminService;
-import com.bits.bits.utils.FourBitsUtils;
 import jakarta.validation.Valid;
-import org.hibernate.boot.model.internal.CopyIdentifierComponentSecondPass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,18 +64,14 @@ public class AdminController {
 
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<AdminModel> updateUser(@PathVariable long userId, @Valid @RequestBody AdminModel user) {
-        AdminModel updateUser = userService.updateUser(userId, user);
-        if(updateUser != null) {
-            return ResponseEntity.ok(updateUser);
-        }
-        return ResponseEntity.badRequest().build();
+        AdminModel updateUser = userService.updateUser(userId, user).getBody();
+        return ResponseEntity.ok(updateUser);
     }
 
     @PatchMapping("/isUserActive/{userId}/{isActive}")
     public ResponseEntity<AdminModel> isUserActive(@PathVariable Long userId, @PathVariable boolean isActive) {
-        return userService.changeIsUserActive(userId, isActive)
-                .map(resp -> ResponseEntity.status(HttpStatus.OK)
-                        .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+        AdminModel updateUserStatus = userService.changeIsUserActive(userId, isActive).getBody();
+        return ResponseEntity.ok(updateUserStatus);
     }
 
     @PostMapping("/login")
