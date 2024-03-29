@@ -1,11 +1,13 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.UserDTO;
+import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
 import com.bits.bits.service.AdminService;
 import com.bits.bits.utils.FourBitsUtils;
 import jakarta.validation.Valid;
+import org.hibernate.boot.model.internal.CopyIdentifierComponentSecondPass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/api/v1/users")
 @RestController
+@RequestMapping("/api/v1/users")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminController {
 
@@ -34,21 +36,26 @@ public class AdminController {
 
     @GetMapping
     public ResponseEntity<List<AdminModel>> getAllUsers() {
-        List<AdminModel> userModelList = userRepository.findAll();
-        if (!userModelList.isEmpty()) {
-            return ResponseEntity.ok(userModelList);
-        }
-        return ResponseEntity.noContent().build();
+        List<AdminModel> users = userService.findAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/listUsersBasicInfo")
     public ResponseEntity<List<UserDTO>> getAllUsersBasicInfo() {
-        List<AdminModel> userList = userRepository.findAll();
-        if (!userList.isEmpty()) {
-            List<UserDTO> userDTOS = FourBitsUtils.convertModelToUserDTO(userList);
-            return ResponseEntity.ok(userDTOS);
-        }
-        return ResponseEntity.noContent().build();
+        List<UserDTO> userList = userService.findAllUsersBasicInfo();
+        return ResponseEntity.ok(userList);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<AdminModel>> getUserByName(@PathVariable(value = "name") String name) {
+        List<AdminModel> users = userService.findUserByName(name);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<Optional<AdminModel>> getUserById(@PathVariable long userId){
+        Optional<AdminModel> user = userService.findUserById(userId);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/signup")
@@ -72,24 +79,6 @@ public class AdminController {
         return userService.changeIsUserActive(userId, isActive)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp)).orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<AdminModel>> getUserByName(@PathVariable(value = "name") String name) {
-        List<AdminModel> users = userRepository.findByNameContainingIgnoreCase(name);
-        if (users.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<Optional<AdminModel>> getUserById(@PathVariable long userId) {
-        Optional<AdminModel> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user);
-        }
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/login")
