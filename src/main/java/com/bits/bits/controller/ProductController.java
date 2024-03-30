@@ -2,6 +2,7 @@ package com.bits.bits.controller;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,39 +43,26 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductModel>> getAllProducts() {
-        List<ProductModel> productsList = productRepository.findAll();
-        if (!productsList.isEmpty()) {
-            return ResponseEntity.ok(productsList);
-        }
-        return ResponseEntity.noContent().build();
+        List<ProductModel> productsList = productService.findAllProducts();
+        return ResponseEntity.ok(productsList);
     }
 
     @GetMapping("/productId/{productId}")
-    public ResponseEntity<List<ProductModel>> getImagesByProductId(@PathVariable long productId) {
-        List<ProductModel> productsListById = productRepository.findAllById(Collections.singleton(productId));
-        if (!productsListById.isEmpty()) {
-            return ResponseEntity.ok(productsListById);
-        }
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Optional<ProductModel>> getProductById(@PathVariable long productId) {
+        Optional<ProductModel> productsListById = productService.findProductById(productId);
+        return ResponseEntity.ok(productsListById);
     }
 
     @GetMapping("/productName/{productName}")
     public ResponseEntity<List<ProductModel>> getAllProductsByName(@PathVariable String productName) {
-        List<ProductModel> productsListByName = productRepository.findAllByProductNameContainingIgnoreCase(productName);
-        if (!productsListByName.isEmpty()) {
-            return ResponseEntity.ok(productsListByName);
-        }
-        return ResponseEntity.noContent().build();
+        List<ProductModel> productsListByName = productService.findAllProductsByName(productName);
+        return ResponseEntity.ok(productsListByName);
     }
 
     @GetMapping("/productImage/{productId}")
     public ResponseEntity<List<ProductImageProjection>> getAllImagesByProductId(@PathVariable long productId) {
-        List<ProductImageProjection> productsImagesList = productImagesRepository
-                .findProductImagesByProductId(productId);
-        if (!productsImagesList.isEmpty()) {
-            return ResponseEntity.ok(productsImagesList);
-        }
-        return ResponseEntity.noContent().build();
+        List<ProductImageProjection> productsImagesList = productService.findAllImagesByProductId(productId);
+        return ResponseEntity.ok(productsImagesList);
     }
 
     @PostMapping("/createProduct")
