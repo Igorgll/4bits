@@ -34,7 +34,7 @@ public class ProductModel {
     @DecimalMin(value = "0.0", inclusive = false)
     private double price;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.MERGE)
     @JsonIgnoreProperties("product")
     private List<ProductImagesModel> productImages;
 
