@@ -63,9 +63,16 @@ public class ProductService {
             if (productDTO.getDescription() != null) {
                 product.setDescription(productDTO.getDescription());
             }
-            if (productDTO.getStorage() != null) {
+            if (productDTO.getRating() != 0) { // Verifica se o rating não é nulo antes de atualizar
+                product.setRating(productDTO.getRating());
+            }
+            if (productDTO.getStorage() != 0) { // Verifica se o storage não é nulo antes de atualizar
                 product.setStorage(productDTO.getStorage());
             }
+            if (productDTO.getProductImages() != null) { // Verifica se as imagens não são nulas antes de atualizar
+                product.setProductImages(productDTO.getProductImages());
+            }
+            product.setActive(productDTO.isActive()); // Atualiza o status ativo
             return productRepository.save(product);
         });
     }
