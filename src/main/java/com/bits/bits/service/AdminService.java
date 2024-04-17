@@ -1,16 +1,20 @@
 package com.bits.bits.service;
 
-import com.bits.bits.dto.UserUpdateRequestDTO;
+import com.bits.bits.dto.UserDTO;
+import com.bits.bits.exceptions.CannotAccessException;
+import com.bits.bits.exceptions.NoContentException;
+import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
+import com.bits.bits.utils.FourBitsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,7 +30,7 @@ public class AdminService {
 
         if (findUser.isPresent()) {
             LOGGER.info("User already exists");
-            return Optional.empty();
+            throw new CannotAccessException();
         }
 
         BCryptPasswordEncoder criptografar = new BCryptPasswordEncoder();
@@ -39,36 +43,70 @@ public class AdminService {
         return Optional.of(adminRepository.save(user));
     }
 
-    public Optional<AdminModel> changeIsUserActive(Long userId, boolean isActive) {
+    public List<AdminModel> findAllUsers() {
+        List<AdminModel> findUsers = adminRepository.findAll();
+        if(findUsers.isEmpty()) {
+           throw new NoContentException();
+        }
+        return findUsers;
+    }
+
+    public List<UserDTO> findAllUsersBasicInfo() {
+        List<AdminModel> findUsers = adminRepository.findAll();
+        if(findUsers.isEmpty()) {
+            throw new NoContentException();
+        }
+        return FourBitsUtils.convertModelToUserDTO(findUsers);
+    }
+
+    public ResponseEntity<AdminModel> changeIsUserActive(Long userId, boolean isActive) {
         Optional<AdminModel> optionalUser = adminRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
             AdminModel user = optionalUser.get();
             user.setActive(isActive);
             LOGGER.info("User status successfully changed");
-            return Optional.of(adminRepository.save(user));
+            return ResponseEntity.ok(adminRepository.save(user));
+        } else {
+            LOGGER.error("User not found with ID: " + userId);
+            throw new UserNotFoundException();
         }
-        return Optional.empty();
     }
 
-    public Optional<AdminModel> updateUser(Long userId, UserUpdateRequestDTO userUpdateRequestDTO) {
+    public ResponseEntity<AdminModel> updateUser(long userId, AdminModel adminModel) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Optional<AdminModel> findUserById = adminRepository.findById(userId);
-        if (findUserById.isPresent()) {
-            AdminModel user = findUserById.get();
+        Optional<AdminModel> findUser = adminRepository.findById(userId);
+        if (findUser.isPresent()) {
+            AdminModel existingUser = findUser.get();
 
-            if (userUpdateRequestDTO.getName() != null) {
-                user.setName(userUpdateRequestDTO.getName());
-            }
-            if (userUpdateRequestDTO.getPassword() != null) {
-                user.setPassword(encoder.encode(userUpdateRequestDTO.getPassword()));
-            }
-            if (userUpdateRequestDTO.getGroup() != null) {
-                user.setGroup(userUpdateRequestDTO.getGroup());
-            }
+            existingUser.setEmail(adminModel.getEmail());
+            existingUser.setName(adminModel.getName());
+            existingUser.setCpf(adminModel.getCpf());
+            existingUser.setPassword(encoder.encode(adminModel.getPassword()));
+            existingUser.setGroup(adminModel.getGroup());
+            existingUser.setActive(true);
 
-            return Optional.of(adminRepository.save(user));
+            return ResponseEntity.ok(adminRepository.save(existingUser));
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().build();
     }
+
+    public Optional<AdminModel> findUserById(long userId) {
+        Optional<AdminModel> findUser = adminRepository.findById(userId);
+
+        if(findUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return findUser;
+    }
+
+    public List<AdminModel> findUserByName(String name) {
+        List<AdminModel> findUser = adminRepository.findByNameContainingIgnoreCase(name);
+
+        if(findUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return findUser;
+    }
+
 }

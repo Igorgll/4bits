@@ -3,7 +3,9 @@ package com.bits.bits.security;
 import java.util.Collection;
 import java.util.List;
 
+import com.bits.bits.utils.UserRoles;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.bits.bits.model.AdminModel;
@@ -14,7 +16,10 @@ public class UserDetailsImpl implements UserDetails {
 
     private String userName;
     private String password;
-    private List<GrantedAuthority> authories;
+
+    private UserRoles userRoles;
+
+    private List<GrantedAuthority> authorities;
 
     public UserDetailsImpl(AdminModel user) {
         this.userName = user.getEmail();
@@ -25,7 +30,9 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authories;
+        if (this.userRoles == UserRoles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+                new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -57,6 +64,4 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-    
 }

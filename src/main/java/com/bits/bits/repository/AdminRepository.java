@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface AdminRepository extends JpaRepository<AdminModel, Long> {
     Optional<AdminModel> findUserByEmail(String email);
 
+    Optional<AdminModel> findById(long userId);
+
     List<AdminModel> findByNameContainingIgnoreCase(String name);
 }

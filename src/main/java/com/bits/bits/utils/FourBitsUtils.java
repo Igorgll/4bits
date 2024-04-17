@@ -12,8 +12,10 @@ public class FourBitsUtils {
         List<UserDTO> dtos = new ArrayList<>();
         for (AdminModel userModel : userModels) {
             UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(userModel.getAdminId());
             userDTO.setName(userModel.getName());
             userDTO.setEmail(userModel.getEmail());
+            userDTO.setCpf(userModel.getCpf());
             userDTO.setGroup(userModel.getGroup());
             userDTO.setActive(userModel.isActive());
 

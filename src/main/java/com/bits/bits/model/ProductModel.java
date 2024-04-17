@@ -5,8 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class ProductModel {
     @DecimalMin(value = "0.0", inclusive = false)
     private double price;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.MERGE)
     @JsonIgnoreProperties("product")
     private List<ProductImagesModel> productImages;
 
@@ -47,5 +47,8 @@ public class ProductModel {
 
     @NotNull
     private int storage;
+
+    @NotNull
+    private boolean isActive;
 
 }
