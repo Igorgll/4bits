@@ -1,5 +1,7 @@
 package com.bits.bits.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,11 +23,12 @@ public class BillingAddressModel {
     private Long billingAdressId;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    @JsonIgnore
     private UserModel userModel;
 
     @NotBlank(message = "CEP cannot be null")
-    @Size(max = 8, message = "CEP has a 8 character limit")
+    @Size(max = 9, message = "CEP has a 9 character limit")
     private String cep;
 
     @NotBlank(message = "Logradouro cannot be null")
@@ -45,7 +48,7 @@ public class BillingAddressModel {
 
     @NotBlank(message = "Cidade cannot be null")
     @Size(max = 255, message = "Cidade has a 255 character limit")
-    private String cidade;
+    private String localidade;
 
     @NotBlank(message = "UF cannot be null")
     @Size(max = 2, message = "UF has a 2 character limit")

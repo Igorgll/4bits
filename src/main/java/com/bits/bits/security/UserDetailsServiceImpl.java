@@ -2,8 +2,11 @@ package com.bits.bits.security;
 
 import java.util.Optional;
 
+import com.bits.bits.model.UserModel;
+import com.bits.bits.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Autowired
 	private AdminRepository userRepository;
-
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
@@ -30,4 +32,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 			
 	}
+
+
 }

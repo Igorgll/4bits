@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,12 +36,11 @@ public class UserModel {
 
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.MERGE)
     @JsonIgnoreProperties("UserModel")
-    @NotBlank(message = "User address must have all fields")
     private List<UserAddressModel> userAddress;
 
-    @OneToOne(mappedBy = "userModel", cascade = CascadeType.MERGE)
-    @JsonIgnoreProperties("userModel")
-    @NotBlank(message = "Billing address must have all fields")
+    @OneToOne(mappedBy = "userModel", cascade = CascadeType.ALL )
+    @NotNull(message = "Billing Address cannot be null")
+    @JsonIgnoreProperties("UserModel")
     private BillingAddressModel billingAddress;
 
     @NotBlank(message = "Client name cannot be null")
