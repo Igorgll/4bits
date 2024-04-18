@@ -33,13 +33,13 @@ public class UserModel {
     @Size(min = 14, message = "CPF must have a minimum of 14 characters")
     private String cpf;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
-    @JsonIgnoreProperties("user")
+    @OneToMany(mappedBy = "userModel", cascade = CascadeType.MERGE)
+    @JsonIgnoreProperties("UserModel")
     @NotBlank(message = "User address must have all fields")
     private List<UserAddressModel> userAddress;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.MERGE)
-    @JsonIgnoreProperties("user")
+    @OneToOne(mappedBy = "userModel", cascade = CascadeType.MERGE)
+    @JsonIgnoreProperties("userModel")
     @NotBlank(message = "Billing address must have all fields")
     private BillingAddressModel billingAddress;
 

@@ -13,7 +13,7 @@ public interface AddressRepository extends JpaRepository<UserAddressModel, Long>
     Optional<UserAddressModel> findById(long addressId);
 
     @Query("SELECT u.cep FROM UserAddressModel u WHERE u.id = :addressId")
-    String findCepById(@Param("adressId") Long addressId);
+    String findCepById(@Param("addressId") Long addressId);
 
     @Query("SELECT u FROM UserAddressModel u WHERE u.cep = :cep")
     UserAddressModel findByCep(@Param("cep") String cep);
