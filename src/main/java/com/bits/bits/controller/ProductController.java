@@ -3,18 +3,11 @@ package com.bits.bits.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.bits.bits.dto.ProductCreationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bits.bits.dto.ProductImageProjection;
 import com.bits.bits.dto.ProductStatusDTO;
@@ -65,7 +58,7 @@ public class ProductController {
     }
 
     @PostMapping("/createProduct")
-    public ResponseEntity<ProductModel> createProduct(@Valid @RequestBody ProductModel product) {
+    public ResponseEntity<ProductModel> createProduct(@Valid @ModelAttribute ProductCreationDTO product) {
         return productService.createProduct(product)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp))

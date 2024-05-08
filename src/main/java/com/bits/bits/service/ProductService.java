@@ -1,8 +1,10 @@
 package com.bits.bits.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.bits.bits.dto.ProductCreationDTO;
 import com.bits.bits.dto.ProductImageProjection;
 import com.bits.bits.dto.ProductUpdateRequestDTO;
 import com.bits.bits.exceptions.CannotAccessException;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.bits.bits.model.ProductModel;
 import com.bits.bits.repository.ProductRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductService {
@@ -30,22 +33,40 @@ public class ProductService {
     private ProductImagesRepository productImagesRepository;
 
     @Transactional // todas as transações com o banco de dados precisam ter sucesso, se uma operação falhar, todas as operações relacionadas devem ser revertidas.
-    public Optional<ProductModel> createProduct(ProductModel product) {
-        boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(product.getProductName());
+    public Optional<ProductModel> createProduct(ProductCreationDTO productDTO) {
+
+        boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(productDTO.getProductName());
 
         if (findProduct) {
             LOGGER.info("Product already registered");
             throw new CannotAccessException();
         }
 
+        ProductModel product = new ProductModel();
+        product.setProductName(productDTO.getProductName());
+        product.setPrice(productDTO.getPrice());
+        product.setDescription(productDTO.getDescription());
+        product.setRating(productDTO.getRating());
+        product.setStorage(productDTO.getStorage());
+        product.setActive(true);
+
+        List<MultipartFile> images = productDTO.getImages();
+        List<ProductImagesModel> productImages = images.stream()
+                .map(imageFile -> {
+                    try {
+                        ProductImagesModel image = new ProductImagesModel();
+                        image.setImageData(imageFile.getBytes());
+                        image.setProduct(product);
+                        productImagesRepository.save(image);
+                        return image;
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to read image file.");
+                    }
+                })
+                .toList();
+
+        product.setProductImages(productImages);
         ProductModel savedProduct = productRepository.save(product);
-
-        List<ProductImagesModel> images = product.getProductImages();
-        for (ProductImagesModel image : images) {
-            image.setProduct(savedProduct);
-        }
-
-        productImagesRepository.saveAll(images);
 
         LOGGER.info("Product successfully created");
         return Optional.of(savedProduct);

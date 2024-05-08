@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ProductImagesRepository extends JpaRepository<ProductImagesModel, Long> {
-    @Query("SELECT p.productImageID AS productImageID, p.imagePath AS imagePath FROM ProductImagesModel p WHERE p.product.productId = :productId")
+    @Query("SELECT p.productImageID AS productImageID, p.imageData AS imageData FROM ProductImagesModel p WHERE p.product.productId = :productId")
     List<ProductImageProjection> findProductImagesByProductId(long productId);
 }
