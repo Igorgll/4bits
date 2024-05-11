@@ -3,8 +3,12 @@ package com.bits.bits.service;
 import com.bits.bits.model.CartItem;
 import com.bits.bits.model.ProductModel;
 import com.bits.bits.model.ShoppingCart;
+import com.bits.bits.repository.CartItemRepository;
+import com.bits.bits.repository.ProductRepository;
+import com.bits.bits.repository.ShoppingCartRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,25 +16,48 @@ public class ShoppingCartService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartService.class);
 
-    private final ShoppingCart shoppingCart;
+    @Autowired
+    private ProductRepository productRepository;
 
-    private ShoppingCartService(){
-        this.shoppingCart = new ShoppingCart();
-    }
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
 
-    public void addItemToShoppingCart(ProductModel product, int quantity) {
-        for (CartItem item : shoppingCart.getItems()){
-            if (item.getProduct().equals(product)) {
-                item.setQuantity(item.getQuantity() + quantity);
-                return;
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    private ShoppingCart shoppingCart;
+
+    public void addProductToShoppingCart(Long productId, int quantity) {
+        if (shoppingCart == null) {
+            shoppingCart = new ShoppingCart();
+            shoppingCartRepository.save(shoppingCart);
+        }
+
+        ProductModel product = productRepository.findById(productId).orElse(null);
+        if (product != null) {
+            LOGGER.info("product found: {}", product.toString());
+
+            boolean itemFound = false;
+            for (CartItem item : shoppingCart.getItems()) {
+                if (item.getProduct().equals(product)) {
+                    item.setQuantity(item.getQuantity() + quantity);
+                    itemFound = true;
+                    break;
+                }
             }
 
-            CartItem newCartItem = new CartItem();
-            newCartItem.setProduct(product);
-            newCartItem.setQuantity(quantity);
-            shoppingCart.getItems().add(newCartItem);
-
-            LOGGER.info("Cart Item adicionado com sucesso: {}", newCartItem);
+            if (!itemFound) {
+                CartItem newCartItem = new CartItem();
+                newCartItem.setProduct(product);
+                newCartItem.setQuantity(quantity);
+                newCartItem.setShoppingCart(shoppingCart);
+                shoppingCart.getItems().add(newCartItem);
+                LOGGER.info("CartItem successfully added: {}", newCartItem);
+            }
+        } else {
+            LOGGER.error("product with id: {}, not found", productId);
         }
+        shoppingCartRepository.save(shoppingCart);
     }
+
 }

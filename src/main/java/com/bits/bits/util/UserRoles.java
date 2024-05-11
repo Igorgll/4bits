@@ -1,4 +1,4 @@
-package com.bits.bits.utils;
+package com.bits.bits.util;
 
 public enum UserRoles {
 

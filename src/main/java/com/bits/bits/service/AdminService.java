@@ -6,7 +6,7 @@ import com.bits.bits.exceptions.NoContentException;
 import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
-import com.bits.bits.utils.FourBitsUtils;
+import com.bits.bits.builder.UserDTOBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class AdminService {
         if(findUsers.isEmpty()) {
             throw new NoContentException();
         }
-        return FourBitsUtils.convertModelToUserDTO(findUsers);
+        return UserDTOBuilder.convertModelToUserDTO(findUsers);
     }
 
     public ResponseEntity<AdminModel> changeIsUserActive(Long userId, boolean isActive) {

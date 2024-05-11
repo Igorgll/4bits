@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/cart")
@@ -26,9 +27,14 @@ public class ShoppingCartController {
         return shoppingCartRepository.findAll();
     }
 
-    @PostMapping("addItem")
-    public void addItemToShoppingCart(@RequestBody ProductModel product, @RequestParam int quantity) {
-        shoppingCartService.addItemToShoppingCart(product, quantity);
+    @GetMapping("viewCart/{shoppingCartId}")
+    public Optional<ShoppingCart> viewCartByShoppingCartById(@PathVariable Long shoppingCartId) {
+        return shoppingCartRepository.findById(shoppingCartId);
+    };
+
+    @PostMapping("addItem/{productId}")
+    public void addItemToShoppingCart(@PathVariable Long productId, @RequestParam int quantity) {
+        shoppingCartService.addProductToShoppingCart(productId, quantity);
     }
 
 }
