@@ -1,4 +1,4 @@
-package com.bits.bits.utils;
+package com.bits.bits.builder;
 
 import com.bits.bits.dto.UserDTO;
 import com.bits.bits.model.AdminModel;
@@ -6,7 +6,7 @@ import com.bits.bits.model.AdminModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FourBitsUtils {
+public class UserDTOBuilder {
 
     public static List<UserDTO> convertModelToUserDTO(List<AdminModel> userModels) {
         List<UserDTO> dtos = new ArrayList<>();

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class CartItem {
 
     @Id
@@ -20,11 +22,11 @@ public class CartItem {
     private Long cartId;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "shopping_cart_id")
     private ShoppingCart shoppingCart;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductModel product;
 

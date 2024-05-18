@@ -11,6 +11,7 @@ import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.NoContentException;
 import com.bits.bits.model.ProductImagesModel;
 import com.bits.bits.repository.ProductImagesRepository;
+import com.bits.bits.util.ImageCompressor;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +55,9 @@ public class ProductService {
         List<ProductImagesModel> productImages = images.stream()
                 .map(imageFile -> {
                     try {
+                        byte[] compressedImageData = ImageCompressor.compressImage(imageFile.getBytes());
                         ProductImagesModel image = new ProductImagesModel();
-                        image.setImageData(imageFile.getBytes());
+                        image.setImageData(compressedImageData);
                         image.setProduct(product);
                         productImagesRepository.save(image);
                         return image;

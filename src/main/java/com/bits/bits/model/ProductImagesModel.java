@@ -18,7 +18,7 @@ public class ProductImagesModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long productImageID;
 
-    @Lob // it says that this is a large object cause it's gonna save the image binary code
+    @Lob // it indicates that this is a large object
     @Column(name = "image_data", nullable = false)
     private byte[] imageData;
 
