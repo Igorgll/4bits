@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ShoppingCartService {
 
@@ -60,4 +63,15 @@ public class ShoppingCartService {
         shoppingCartRepository.save(shoppingCart);
     }
 
+    public void removeProductFromShoppingCart(Long shoppingCartId, Long productId){
+        Optional<ShoppingCart> findProductInCart = shoppingCartRepository.findById(shoppingCartId);
+        if (findProductInCart.isPresent()) {
+            ShoppingCart shoppingCart = findProductInCart.get();
+            List<CartItem> items = shoppingCart.getItems();
+            items.removeIf(item -> item.getProduct().getProductId() == productId);
+            shoppingCartRepository.save(shoppingCart);
+        } else {
+            throw new RuntimeException("Shopping cart not found");
+        }
+    }
 }
