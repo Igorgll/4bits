@@ -1,14 +1,17 @@
 package com.bits.bits.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.bits.bits.dto.ProductCreationDTO;
 import com.bits.bits.dto.ProductImageProjection;
 import com.bits.bits.dto.ProductUpdateRequestDTO;
 import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.NoContentException;
 import com.bits.bits.model.ProductImagesModel;
 import com.bits.bits.repository.ProductImagesRepository;
+import com.bits.bits.util.ImageCompressor;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.bits.bits.model.ProductModel;
 import com.bits.bits.repository.ProductRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductService {
@@ -30,27 +34,47 @@ public class ProductService {
     private ProductImagesRepository productImagesRepository;
 
     @Transactional // todas as transações com o banco de dados precisam ter sucesso, se uma operação falhar, todas as operações relacionadas devem ser revertidas.
-    public Optional<ProductModel> createProduct(ProductModel product) {
-        boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(product.getProductName());
+    public Optional<ProductModel> createProduct(ProductCreationDTO productDTO) {
+
+        boolean findProduct = productRepository.existsByProductNameContainingIgnoreCase(productDTO.getProductName());
 
         if (findProduct) {
             LOGGER.info("Product already registered");
             throw new CannotAccessException();
         }
 
+        ProductModel product = new ProductModel();
+        product.setProductName(productDTO.getProductName());
+        product.setPrice(productDTO.getPrice());
+        product.setDescription(productDTO.getDescription());
+        product.setRating(productDTO.getRating());
+        product.setStorage(productDTO.getStorage());
+        product.setActive(true);
+
+        List<MultipartFile> images = productDTO.getImages();
+        List<ProductImagesModel> productImages = images.stream()
+                .map(imageFile -> {
+                    try {
+                        byte[] compressedImageData = ImageCompressor.compressImage(imageFile.getBytes());
+                        ProductImagesModel image = new ProductImagesModel();
+                        image.setImageData(compressedImageData);
+                        image.setProduct(product);
+                        productImagesRepository.save(image);
+                        return image;
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to read image file.");
+                    }
+                })
+                .toList();
+
+        product.setProductImages(productImages);
         ProductModel savedProduct = productRepository.save(product);
-
-        List<ProductImagesModel> images = product.getProductImages();
-        for (ProductImagesModel image : images) {
-            image.setProduct(savedProduct);
-        }
-
-        productImagesRepository.saveAll(images);
 
         LOGGER.info("Product successfully created");
         return Optional.of(savedProduct);
     }
 
+    @Transactional
     public Optional<ProductModel> updateProduct(Long productId, ProductUpdateRequestDTO productDTO) {
         Optional<ProductModel> findProduct = productRepository.findById(productId);
         return findProduct.map(product -> {
@@ -63,16 +87,30 @@ public class ProductService {
             if (productDTO.getDescription() != null) {
                 product.setDescription(productDTO.getDescription());
             }
-            if (productDTO.getRating() != 0) { // Verifica se o rating não é nulo antes de atualizar
+            if (productDTO.getRating() != 0) {
                 product.setRating(productDTO.getRating());
             }
-            if (productDTO.getStorage() != 0) { // Verifica se o storage não é nulo antes de atualizar
+            if (productDTO.getStorage() != 0) {
                 product.setStorage(productDTO.getStorage());
             }
-            if (productDTO.getProductImages() != null) { // Verifica se as imagens não são nulas antes de atualizar
-                product.setProductImages(productDTO.getProductImages());
+            if (productDTO.getProductImages() != null && !productDTO.getProductImages().isEmpty()) {
+                List<ProductImagesModel> productImages = productDTO.getProductImages().stream()
+                        .map(imageFile -> {
+                            try {
+                                byte[] compressedImageData = ImageCompressor.compressImage(imageFile.getBytes());
+                                ProductImagesModel image = new ProductImagesModel();
+                                image.setImageData(compressedImageData);
+                                image.setProduct(product);
+                                return image;
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to read image file.");
+                            }
+                        })
+                        .toList();
+                product.getProductImages().clear();
+                product.getProductImages().addAll(productImages);
             }
-            product.setActive(productDTO.isActive()); // Atualiza o status ativo
+            product.setActive(productDTO.isActive());
             return productRepository.save(product);
         });
     }

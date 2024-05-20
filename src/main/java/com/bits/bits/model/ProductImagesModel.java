@@ -1,12 +1,10 @@
 package com.bits.bits.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "tb_product_images")
@@ -20,12 +18,13 @@ public class ProductImagesModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long productImageID;
 
+    @Lob // it indicates that this is a large object
+    @Column(name = "image_data", nullable = false)
+    private byte[] imageData;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductModel product;
-
-    @NotNull
-    private String imagePath;
 }
 
 
