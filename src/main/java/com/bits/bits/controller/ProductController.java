@@ -76,11 +76,11 @@ public class ProductController {
     }
 
     @PutMapping("/updateProduct/{productId}")
-    public ResponseEntity<ProductModel> updateProduct(@PathVariable Long productId,
-            @Valid @RequestBody ProductUpdateRequestDTO product) {
+    public ResponseEntity<ProductModel> updateProduct(
+            @PathVariable Long productId,
+            @Valid @ModelAttribute ProductUpdateRequestDTO product) {
         return productService.updateProduct(productId, product)
-                .map(resp -> ResponseEntity.status(HttpStatus.OK)
-                        .body(resp))
+                .map(resp -> ResponseEntity.status(HttpStatus.OK).body(resp))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
