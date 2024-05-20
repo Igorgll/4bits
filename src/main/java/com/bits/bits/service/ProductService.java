@@ -74,6 +74,7 @@ public class ProductService {
         return Optional.of(savedProduct);
     }
 
+    @Transactional
     public Optional<ProductModel> updateProduct(Long productId, ProductUpdateRequestDTO productDTO) {
         Optional<ProductModel> findProduct = productRepository.findById(productId);
         return findProduct.map(product -> {
@@ -86,16 +87,30 @@ public class ProductService {
             if (productDTO.getDescription() != null) {
                 product.setDescription(productDTO.getDescription());
             }
-            if (productDTO.getRating() != 0) { // Verifica se o rating não é nulo antes de atualizar
+            if (productDTO.getRating() != 0) {
                 product.setRating(productDTO.getRating());
             }
-            if (productDTO.getStorage() != 0) { // Verifica se o storage não é nulo antes de atualizar
+            if (productDTO.getStorage() != 0) {
                 product.setStorage(productDTO.getStorage());
             }
-            if (productDTO.getProductImages() != null) { // Verifica se as imagens não são nulas antes de atualizar
-                product.setProductImages(productDTO.getProductImages());
+            if (productDTO.getProductImages() != null && !productDTO.getProductImages().isEmpty()) {
+                List<ProductImagesModel> productImages = productDTO.getProductImages().stream()
+                        .map(imageFile -> {
+                            try {
+                                byte[] compressedImageData = ImageCompressor.compressImage(imageFile.getBytes());
+                                ProductImagesModel image = new ProductImagesModel();
+                                image.setImageData(compressedImageData);
+                                image.setProduct(product);
+                                return image;
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to read image file.");
+                            }
+                        })
+                        .toList();
+                product.getProductImages().clear();
+                product.getProductImages().addAll(productImages);
             }
-            product.setActive(productDTO.isActive()); // Atualiza o status ativo
+            product.setActive(productDTO.isActive());
             return productRepository.save(product);
         });
     }

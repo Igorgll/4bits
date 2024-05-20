@@ -53,21 +53,6 @@ public class UserService {
 
     }
 
-    private void addBillingAddress(UserModel user){
-        AddressDTO addressDTO = viaCEPService.findAddress(user.getBillingAddress().getCep());
-        BillingAddressModel billingAddressModel = user.getBillingAddress();
-        billingAddressModel.setUserModel(user);
-        billingAddressModel.setLogradouro(addressDTO.getLogradouro());
-        billingAddressModel.setBairro(addressDTO.getBairro());
-        billingAddressModel.setLocalidade(addressDTO.getLocalidade());
-        billingAddressModel.setUf(addressDTO.getUf());
-        //user.setBillingAddress();
-
-        user.setBillingAddress(billingAddressModel);
-    }
-
-
-
     @Transactional
     public Optional<UserModel> userSignUp(UserModel user) {
         Optional<UserModel> findUser = userRepository.findUserByEmail(user.getEmail());
@@ -77,20 +62,28 @@ public class UserService {
             throw new CannotAccessException();
         }
 
-        addBillingAddress(user);
-
         BCryptPasswordEncoder criptografar = new BCryptPasswordEncoder();
         String senhaCriptografada = criptografar.encode(user.getPassword());
         user.setPassword(senhaCriptografada);
 
+        addBillingAddress(user);
+
+        if (user.getUserAddress() != null && !user.getUserAddress().isEmpty()) {
+            user.getUserAddress().forEach(address -> address.setUserModel(user));
+        }
+
         LOGGER.info("User successfully registered");
-
         return Optional.of(userRepository.save(user));
-
     }
 
-
-
-
-
+    private void addBillingAddress(UserModel user){
+        AddressDTO addressDTO = viaCEPService.findAddress(user.getBillingAddress().getCep());
+        BillingAddressModel billingAddressModel = user.getBillingAddress();
+        billingAddressModel.setUserModel(user);
+        billingAddressModel.setLogradouro(addressDTO.getLogradouro());
+        billingAddressModel.setBairro(addressDTO.getBairro());
+        billingAddressModel.setLocalidade(addressDTO.getLocalidade());
+        billingAddressModel.setUf(addressDTO.getUf());
+        user.setBillingAddress(billingAddressModel);
+    }
 }
