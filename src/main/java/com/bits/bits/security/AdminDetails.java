@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.bits.bits.model.AdminModel;
 
-public class UserDetailsImpl implements UserDetails {
+public class AdminDetails implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,12 +21,12 @@ public class UserDetailsImpl implements UserDetails {
 
     private List<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(AdminModel user) {
+    public AdminDetails(AdminModel user) {
         this.userName = user.getEmail();
         this.password = user.getPassword();
     }
 
-    public UserDetailsImpl() {}
+    public AdminDetails() {}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
