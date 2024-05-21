@@ -6,7 +6,6 @@ import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,16 +19,29 @@ import com.bits.bits.repository.AdminRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
 	
 	@Autowired
-	private AdminRepository userRepository;
+	private AdminRepository adminRepository;
+	@Autowired
+	private UserRepository userRepository;
+
+	public UserDetailsServiceImpl(UserRepository userRepository, AdminRepository adminRepository) {
+		this.userRepository = userRepository;
+		this.adminRepository = adminRepository;
+	}
+
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+		Optional<UserModel> client = userRepository.findUserByEmail(userName);
+		if (client != null) {
+			return new ClientDetails(client.get());
+		}
 
-		Optional<AdminModel> usuario = userRepository.findUserByEmail(userName);
+		Optional<AdminModel> admin = adminRepository.findUserByEmail(userName);
 
-		if (usuario.isPresent())
-			return new UserDetailsImpl(usuario.get());
-		else
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		if (admin != null) {
+			return new AdminDetails(admin.get());
+		}
+
+		throw new UsernameNotFoundException("User not found");
 			
 	}
 
