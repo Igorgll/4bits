@@ -4,6 +4,9 @@ import com.bits.bits.dto.AddressDTO;
 import com.bits.bits.dto.ClientDTO;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,8 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.Authenticator;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -44,11 +45,26 @@ public class UserController {
     }
 
     @PostMapping("/clientLogin")
-    public ResponseEntity<String> authenticateClient(@RequestBody ClientDTO clientDTO) {
+    public ResponseEntity<String> authenticateClient(@RequestBody ClientDTO clientDTO, HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(clientDTO.getEmail(), clientDTO.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("user", clientDTO.getEmail());
+        response.setHeader("X-Auth-Token", httpSession.getId());
+
+        System.out.println("session created, session id: " + httpSession.getId());
+        System.out.println("user with the active session: " + httpSession.getAttribute("user"));
         return new ResponseEntity<>("User Login Successfully!", HttpStatus.OK);
+    }
+
+        @PostMapping("/clientLogout")
+        public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+            if (httpSession != null) {
+                httpSession.invalidate();
+            }
+            return new ResponseEntity<>("User logged out successfully!", HttpStatus.OK);
         }
     }
 
