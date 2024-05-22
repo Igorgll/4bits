@@ -1,6 +1,5 @@
 package com.bits.bits.controller;
 
-import com.bits.bits.model.ProductModel;
 import com.bits.bits.model.ShoppingCart;
 import com.bits.bits.repository.ShoppingCartRepository;
 import com.bits.bits.service.ShoppingCartService;
