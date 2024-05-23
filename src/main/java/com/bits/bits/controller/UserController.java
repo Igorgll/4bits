@@ -2,7 +2,9 @@ package com.bits.bits.controller;
 
 import com.bits.bits.dto.AddressDTO;
 import com.bits.bits.dto.ClientDTO;
+import com.bits.bits.model.AdminModel;
 import com.bits.bits.model.UserModel;
+import com.bits.bits.repository.UserRepository;
 import com.bits.bits.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +19,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("api/v1/users")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -27,6 +31,15 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Optional<UserModel>> getUserByEmail(@Valid @PathVariable String email){
+        Optional<UserModel> user = userRepository.findUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
 
     @PostMapping("/createUser")
     public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {

@@ -68,7 +68,8 @@ public class ShoppingCartService {
         if (findProductInCart.isPresent()) {
             ShoppingCart shoppingCart = findProductInCart.get();
             List<CartItem> items = shoppingCart.getItems();
-            items.removeIf(item -> item.getProduct().getProductId() == productId);
+            items.removeIf(item -> Long.valueOf(item.getProduct().getProductId()).equals(productId));
+            shoppingCart.setItems(items);
             shoppingCartRepository.save(shoppingCart);
         } else {
             throw new RuntimeException("Shopping cart not found");
