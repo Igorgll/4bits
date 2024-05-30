@@ -51,8 +51,7 @@ public class UserModel {
     @Size(min = 8, message = "User password must have a minimum of 8 characters")
     private String password;
 
-
-
-
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<Orders> orders;
 }
