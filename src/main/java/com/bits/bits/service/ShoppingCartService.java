@@ -38,12 +38,13 @@ public class ShoppingCartService {
 
         ProductModel product = productRepository.findById(productId).orElse(null);
         if (product != null) {
-            LOGGER.info("product found: {}", product.toString());
+            LOGGER.info("product found: {}", product);
 
             boolean itemFound = false;
             for (CartItem item : shoppingCart.getItems()) {
                 if (item.getProduct().equals(product)) {
                     item.setQuantity(item.getQuantity() + quantity);
+                    cartItemRepository.save(item);
                     itemFound = true;
                     break;
                 }
@@ -54,25 +55,39 @@ public class ShoppingCartService {
                 newCartItem.setProduct(product);
                 newCartItem.setQuantity(quantity);
                 newCartItem.setShoppingCart(shoppingCart);
+                cartItemRepository.save(newCartItem);
                 shoppingCart.getItems().add(newCartItem);
                 LOGGER.info("CartItem successfully added: {}", newCartItem);
             }
+            shoppingCartRepository.save(shoppingCart);
         } else {
             LOGGER.error("product with id: {}, not found", productId);
         }
-        shoppingCartRepository.save(shoppingCart);
     }
 
-    public void removeProductFromShoppingCart(Long shoppingCartId, Long productId){
-        Optional<ShoppingCart> findProductInCart = shoppingCartRepository.findById(shoppingCartId);
-        if (findProductInCart.isPresent()) {
-            ShoppingCart shoppingCart = findProductInCart.get();
-            List<CartItem> items = shoppingCart.getItems();
-            items.removeIf(item -> Long.valueOf(item.getProduct().getProductId()).equals(productId));
-            shoppingCart.setItems(items);
-            shoppingCartRepository.save(shoppingCart);
+    public void removeProductFromShoppingCart(Long shoppingCartId, Long productId, int quantity) {
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findById(shoppingCartId);
+        if (cartOptional.isPresent()) {
+            ShoppingCart shoppingCart = cartOptional.get();
+            CartItem itemToRemove = shoppingCart.getItems().stream()
+                    .filter(item -> Long.valueOf(item.getProduct().getProductId()).equals(productId))
+                    .findFirst().orElse(null);
+            if (itemToRemove != null) {
+                if (itemToRemove.getQuantity() > quantity) {
+                    itemToRemove.setQuantity(itemToRemove.getQuantity() - quantity);
+                    cartItemRepository.save(itemToRemove);
+                    LOGGER.info("Quantity of product with id : {} decreased by {}", productId, quantity);
+                } else {
+                    shoppingCart.getItems().remove(itemToRemove);
+                    cartItemRepository.delete(itemToRemove);
+                    LOGGER.info("Product with id: {} removed from cart", productId);
+                }
+                shoppingCartRepository.save(shoppingCart);
+            } else {
+                LOGGER.warn("Product with id: {} not found in cart", productId);
+            }
         } else {
-            throw new RuntimeException("Shopping cart not found");
+            LOGGER.error("Shopping cart with id: {} not found", shoppingCartId);
         }
     }
 }

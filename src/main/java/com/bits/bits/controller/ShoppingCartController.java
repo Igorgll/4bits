@@ -21,24 +21,24 @@ public class ShoppingCartController {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
 
-    @GetMapping("viewCart")
+    @GetMapping("/viewCart")
     public List<ShoppingCart> viewCart(){
         return shoppingCartRepository.findAll();
     }
 
-    @GetMapping("viewCart/{shoppingCartId}")
+    @GetMapping("/viewCart/{shoppingCartId}")
     public Optional<ShoppingCart> viewCartByShoppingCartById(@PathVariable Long shoppingCartId) {
         return shoppingCartRepository.findById(shoppingCartId);
     };
 
-    @PostMapping("addItem/{productId}")
+    @PostMapping("/addItem/{productId}")
     public void addItemToShoppingCart(@PathVariable Long productId, @RequestParam int quantity) {
         shoppingCartService.addProductToShoppingCart(productId, quantity);
     }
 
-    @DeleteMapping("removeItem/{shoppingCartId}/{productId}")
-    public void removeItemFromShoppingCart(@PathVariable Long shoppingCartId, @PathVariable Long productId){
-        shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId);
+    @DeleteMapping("/removeItem/{shoppingCartId}/{productId}")
+    public void removeItemFromShoppingCart(@PathVariable Long shoppingCartId, @PathVariable Long productId, @RequestParam int quantity){
+        shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId, quantity);
     }
 
 }
