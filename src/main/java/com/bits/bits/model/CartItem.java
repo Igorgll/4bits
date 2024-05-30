@@ -2,6 +2,7 @@ package com.bits.bits.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +31,13 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private ProductModel product;
 
+    @NotNull(message = "Quantity cannot be null.")
     private int quantity;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Orders order;
 
     public CartItem(ProductModel product, int quantity) {
         this.product = product;

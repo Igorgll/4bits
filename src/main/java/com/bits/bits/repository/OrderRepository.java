@@ -1,9 +1,10 @@
 package com.bits.bits.repository;
 
-import com.bits.bits.model.CartItem;
+import com.bits.bits.model.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+public interface OrderRepository extends JpaRepository<Orders, Long> {
+
 }
