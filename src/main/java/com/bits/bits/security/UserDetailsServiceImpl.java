@@ -1,9 +1,7 @@
 package com.bits.bits.security;
 
 import com.bits.bits.model.AdminModel;
-import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.AdminRepository;
-import com.bits.bits.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

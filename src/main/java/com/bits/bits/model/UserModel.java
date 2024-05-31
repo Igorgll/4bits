@@ -47,6 +47,10 @@ public class UserModel {
     @Size(min = 3, message = "Client name must have at least 3 characters on each word;")
     private String nome;
 
+    @NotNull
+    @Column(name = "group_name")
+    private String group;
+
     @NotBlank(message = "User password cannot be null")
     @Size(min = 8, message = "User password must have a minimum of 8 characters")
     private String password;

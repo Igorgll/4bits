@@ -6,6 +6,7 @@ import com.bits.bits.model.BillingAddressModel;
 import com.bits.bits.model.UserAddressModel;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
+import com.bits.bits.util.UserRoles;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,8 @@ public class UserService {
         BCryptPasswordEncoder criptografar = new BCryptPasswordEncoder();
         String senhaCriptografada = criptografar.encode(user.getPassword());
         user.setPassword(senhaCriptografada);
+
+        user.setGroup(UserRoles.USER.getRole());
 
         addBillingAddress(user);
 

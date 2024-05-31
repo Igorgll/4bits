@@ -4,6 +4,7 @@ import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
+import com.bits.bits.util.UserRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class AdminService {
         String senhaCriptografada = criptografar.encode(admin.getPassword());
         admin.setPassword(senhaCriptografada);
 
+        admin.setGroup(UserRoles.ADMIN.getRole());
         admin.setActive(true);
         LOGGER.info("Admin successfully registered");
 

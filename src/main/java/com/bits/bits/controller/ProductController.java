@@ -32,7 +32,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<ProductModel>> getAllProducts() {
         List<ProductModel> productsList = productService.findAllProducts();
         return ResponseEntity.ok(productsList);

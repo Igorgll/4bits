@@ -62,8 +62,26 @@ public class BasicSecurityConfig {
                 .headers(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/v1/users/**", "/api/v1/admins/login","/api/v1/admins/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/admins/login",
+                                "/api/v1/orders/all",
+                                "/api/v1/orders/updateStatus/{orderId}",
+                                "/api/v1/products/createProduct",
+                                "/api/v1/products/isProductActive/status",
+                                "/api/v1/products/updateProduct/{productId}")
+                        .hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/h2-console/**",
+                                "/api/v1/orders/{orderId}",
+                                "/api/v1/orders/create",
+                                "/api/v1/users/**",
+                                "/api/v1/admins/signup",
+                                "/api/v1/products/all",
+                                "/api/v1/products/productId/{productId}",
+                                "/api/v1/products/productName/{productName}",
+                                "/api/v1/products/productImage/{productId}",
+                                "/api/v1/cart/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults());
