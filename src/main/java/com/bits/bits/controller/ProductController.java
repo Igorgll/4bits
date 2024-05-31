@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.bits.bits.dto.ProductImageProjection;
-import com.bits.bits.dto.ProductStatusDTO;
 import com.bits.bits.dto.ProductUpdateRequestDTO;
 import com.bits.bits.model.ProductModel;
 import com.bits.bits.repository.ProductImagesRepository;
@@ -66,9 +65,7 @@ public class ProductController {
     }
 
     @PatchMapping("/isProductActive/status")
-    public ResponseEntity<ProductModel> isProductActive(@RequestBody ProductStatusDTO productStatus) {
-        Long productId = productStatus.getProductId();
-        boolean isActive = productStatus.isActive();
+    public ResponseEntity<ProductModel> isProductActive(@RequestParam Long productId, @RequestParam boolean isActive) {
         return productService.changeProductStatus(productId, isActive)
                 .map(resp -> ResponseEntity.status(HttpStatus.OK)
                         .body(resp))

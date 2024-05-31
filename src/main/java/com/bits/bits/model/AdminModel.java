@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_admin_estoquista")
+@Table(name = "tb_admin")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class AdminModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long adminId;
+    private Long adminId;
 
     @Email(message = "Email must be in the right format")
     @NotBlank(message = "Email cannot be null")

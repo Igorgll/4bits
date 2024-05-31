@@ -2,7 +2,6 @@ package com.bits.bits.controller;
 
 import com.bits.bits.dto.AddressDTO;
 import com.bits.bits.dto.ClientDTO;
-import com.bits.bits.model.AdminModel;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
 import com.bits.bits.service.UserService;
@@ -19,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -34,6 +34,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @GetMapping
+    public List<UserModel> getAllUsers (){ return userRepository.findAll(); }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<Optional<UserModel>> getUserByEmail(@Valid @PathVariable String email){
@@ -66,8 +69,6 @@ public class UserController {
         httpSession.setAttribute("user", clientDTO.getEmail());
         response.setHeader("X-Auth-Token", httpSession.getId());
 
-        System.out.println("session created, session id: " + httpSession.getId());
-        System.out.println("user with the active session: " + httpSession.getAttribute("user"));
         return new ResponseEntity<>("User Login Successfully!", HttpStatus.OK);
     }
 

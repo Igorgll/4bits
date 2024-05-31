@@ -4,13 +4,18 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,29 +30,44 @@ public class BasicSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    @Primary
+    public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(encoder);
+        return new ProviderManager(provider);
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(AdminDetailsServiceImpl adminDetailsService, UserDetailsServiceImpl userDetailsService) {
+        return email -> {
+            UserDetails user;
+            try {
+                user = adminDetailsService.loadUserByUsername(email);
+            } catch (UsernameNotFoundException e) {
+                user = userDetailsService.loadUserByUsername(email);
+            }
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found with email: " + email);
+            }
+            return user;
+        };
     }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
-                .cors(withDefaults());
-
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/users/**")
-                        .permitAll()
+                .cors(withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/v1/users/**", "/api/v1/admins/login","/api/v1/admins/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .httpBasic(withDefaults());
 
         return http.build();
-
     }
-
 }
