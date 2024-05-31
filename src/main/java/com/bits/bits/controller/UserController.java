@@ -2,6 +2,7 @@ package com.bits.bits.controller;
 
 import com.bits.bits.dto.AddressDTO;
 import com.bits.bits.dto.ClientDTO;
+import com.bits.bits.dto.UserLoginDTO;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
 import com.bits.bits.service.UserService;
@@ -61,19 +62,19 @@ public class UserController {
     }
 
     @PostMapping("/clientLogin")
-    public ResponseEntity<String> authenticateClient(@RequestBody ClientDTO clientDTO, HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(clientDTO.getEmail(), clientDTO.getPassword()));
+    public ResponseEntity<String> authenticateClient(@RequestBody UserLoginDTO userLoginDTO, HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", clientDTO.getEmail());
+        httpSession.setAttribute("user", userLoginDTO.getEmail());
         response.setHeader("X-Auth-Token", httpSession.getId());
 
         return new ResponseEntity<>("User Login Successfully!", HttpStatus.OK);
     }
 
-        @PostMapping("/clientLogout")
-        public ResponseEntity<String> logout(HttpServletRequest request) {
+    @PostMapping("/clientLogout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession httpSession = request.getSession(false);
             if (httpSession != null) {
                 httpSession.invalidate();
