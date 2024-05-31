@@ -19,5 +19,4 @@ public class ProductUpdateRequestDTO {
     private double rating;
     private int storage;
     private boolean isActive;
-
 }

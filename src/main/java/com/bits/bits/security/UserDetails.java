@@ -1,19 +1,17 @@
 package com.bits.bits.security;
 
+import com.bits.bits.model.UserModel;
+import org.springframework.security.core.GrantedAuthority;
+
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
 
-import com.bits.bits.model.AdminModel;
+    private final UserModel user;
 
-public class AdminDetails implements UserDetails {
-
-    private final AdminModel admin;
-
-    public AdminDetails(AdminModel admin) {
-        this.admin = admin;
+    public UserDetails(UserModel user) {
+        this.user = user;
     }
 
     @Override
@@ -22,11 +20,13 @@ public class AdminDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() { return admin.getPassword(); }
+    public String getPassword() {
+        return user.getPassword();
+    }
 
     @Override
     public String getUsername() {
-        return admin.getEmail();
+        return user.getEmail();
     }
 
     @Override
@@ -46,6 +46,6 @@ public class AdminDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return admin.isActive();
+        return true;
     }
 }
