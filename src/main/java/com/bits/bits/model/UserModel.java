@@ -44,8 +44,8 @@ public class UserModel {
     private BillingAddressModel billingAddress;
 
     @NotBlank(message = "Client name cannot be null")
-    @Size(min = 3, message = "Client name must have at least 3 characters on each word;")
-    private String nome;
+    @Size(min = 3, message = "Client name must have at least 3 characters on each word.")
+    private String name;
 
     @NotNull
     @Column(name = "group_name")
