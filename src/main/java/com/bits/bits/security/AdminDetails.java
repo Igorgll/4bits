@@ -1,6 +1,7 @@
 package com.bits.bits.security;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +20,7 @@ public class AdminDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(admin.getGroup()));
+        return Collections.singletonList(new SimpleGrantedAuthority(admin.getGroup()));
     }
 
     @Override

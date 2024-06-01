@@ -18,7 +18,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getGroup()));
+        return Collections.singletonList(new SimpleGrantedAuthority(user.getGroup()));
     }
 
     @Override

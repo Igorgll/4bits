@@ -2,6 +2,7 @@ package com.bits.bits.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.bits.bits.service.CustomUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -30,33 +31,12 @@ public class BasicSecurityConfig {
     }
 
     @Bean
-    @Primary
-    public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService, AdminDetailsServiceImpl adminDetailsService, PasswordEncoder encoder) {
-        DaoAuthenticationProvider userProvider = new DaoAuthenticationProvider();
-        userProvider.setUserDetailsService(userDetailsService);
-        userProvider.setPasswordEncoder(encoder);
+    public AuthenticationManager authenticationManager(CustomUserDetailsServiceImpl customUserDetailsService, PasswordEncoder encoder) {
+        DaoAuthenticationProvider customProvider = new DaoAuthenticationProvider();
+        customProvider.setUserDetailsService(customUserDetailsService);
+        customProvider.setPasswordEncoder(encoder);
 
-        DaoAuthenticationProvider adminProvider = new DaoAuthenticationProvider();
-        adminProvider.setUserDetailsService(adminDetailsService);
-        adminProvider.setPasswordEncoder(encoder);
-
-        return new ProviderManager(userProvider, adminProvider);
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(AdminDetailsServiceImpl adminDetailsService, UserDetailsServiceImpl userDetailsService) {
-        return email -> {
-            UserDetails user;
-            try {
-                user = adminDetailsService.loadUserByUsername(email);
-            } catch (UsernameNotFoundException e) {
-                user = userDetailsService.loadUserByUsername(email);
-            }
-            if (user == null) {
-                throw new UsernameNotFoundException("User not found with email: " + email);
-            }
-            return user;
-        };
+        return new ProviderManager(customProvider);
     }
 
     @Bean
