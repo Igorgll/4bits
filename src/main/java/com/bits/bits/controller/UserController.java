@@ -27,9 +27,6 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -62,13 +59,7 @@ public class UserController {
 
     @PostMapping("/clientLogin")
     public ResponseEntity<String> authenticateClient(@RequestBody UserLoginDTO userLoginDTO, HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("user", userLoginDTO.getEmail());
-        response.setHeader("X-Auth-Token", httpSession.getId());
-
+        userService.authenticateUser(userLoginDTO, request, response);
         return new ResponseEntity<>("User Login Successfully!", HttpStatus.OK);
     }
 

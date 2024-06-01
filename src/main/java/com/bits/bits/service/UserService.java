@@ -1,15 +1,24 @@
 package com.bits.bits.service;
 
 import com.bits.bits.dto.AddressDTO;
+import com.bits.bits.dto.AdminLoginDTO;
+import com.bits.bits.dto.UserLoginDTO;
 import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.model.BillingAddressModel;
 import com.bits.bits.model.UserAddressModel;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
 import com.bits.bits.util.UserRoles;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +36,9 @@ public class UserService {
 
     @Autowired
     private ViaCEPService viaCEPService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public void addDeliveryAddress(Long userId, String cep) {
         UserModel user = userRepository.findById(userId)
@@ -76,6 +88,17 @@ public class UserService {
 
         LOGGER.info("User successfully registered");
         return Optional.of(userRepository.save(user));
+    }
+
+    public void authenticateUser(UserLoginDTO userLoginDTO, HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("user", userLoginDTO.getEmail());
+        response.setHeader("X-Auth-Token", httpSession.getId());
+
+        LOGGER.info("Session created successfully, token: {}", httpSession.getId());
     }
 
     private void addBillingAddress(UserModel user){

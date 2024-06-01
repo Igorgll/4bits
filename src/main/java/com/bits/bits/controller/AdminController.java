@@ -84,4 +84,13 @@ public class AdminController {
         adminService.authenticateAdmin(adminLoginDTO, request, response);
         return new ResponseEntity<>("Admin login successfully", HttpStatus.OK);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+        if (httpSession != null) {
+            httpSession.invalidate();
+        }
+        return new ResponseEntity<>("Admin logged out successfully!", HttpStatus.OK);
+    }
 }
