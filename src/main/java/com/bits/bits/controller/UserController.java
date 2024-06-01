@@ -1,7 +1,6 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.AddressDTO;
-import com.bits.bits.dto.ClientDTO;
 import com.bits.bits.dto.UserLoginDTO;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;

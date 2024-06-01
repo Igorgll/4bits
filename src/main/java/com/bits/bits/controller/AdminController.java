@@ -82,6 +82,6 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<String> authenticateAdmin(@RequestBody AdminLoginDTO adminLoginDTO, HttpServletRequest request, HttpServletResponse response) {
         adminService.authenticateAdmin(adminLoginDTO, request, response);
-        return new ResponseEntity<>("Admin login successful", HttpStatus.OK);
+        return new ResponseEntity<>("Admin login successfully", HttpStatus.OK);
     }
 }

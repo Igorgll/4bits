@@ -31,11 +31,16 @@ public class BasicSecurityConfig {
 
     @Bean
     @Primary
-    public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(encoder);
-        return new ProviderManager(provider);
+    public AuthenticationManager authenticationManager(UserDetailsServiceImpl userDetailsService, AdminDetailsServiceImpl adminDetailsService, PasswordEncoder encoder) {
+        DaoAuthenticationProvider userProvider = new DaoAuthenticationProvider();
+        userProvider.setUserDetailsService(userDetailsService);
+        userProvider.setPasswordEncoder(encoder);
+
+        DaoAuthenticationProvider adminProvider = new DaoAuthenticationProvider();
+        adminProvider.setUserDetailsService(adminDetailsService);
+        adminProvider.setPasswordEncoder(encoder);
+
+        return new ProviderManager(userProvider, adminProvider);
     }
 
     @Bean
