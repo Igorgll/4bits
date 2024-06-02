@@ -1,34 +1,32 @@
 package com.bits.bits.security;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.bits.bits.model.EstoquistaModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.bits.bits.model.AdminModel;
+import java.util.Collection;
+import java.util.Collections;
 
-public class AdminDetails implements UserDetails {
+public class EstoquistaDetails implements UserDetails {
 
-    private final AdminModel admin;
+    private final EstoquistaModel estoquista;
 
-    public AdminDetails(AdminModel admin) {
-        this.admin = admin;
-    }
+    public EstoquistaDetails(EstoquistaModel estoquista) { this.estoquista = estoquista; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(admin.getGroup()));
+        return Collections.singletonList(new SimpleGrantedAuthority(estoquista.getGroup()));
     }
 
     @Override
-    public String getPassword() { return admin.getPassword(); }
+    public String getPassword() {
+        return estoquista.getPassword();
+    }
 
     @Override
     public String getUsername() {
-        return admin.getEmail();
+        return estoquista.getEmail();
     }
 
     @Override
@@ -48,6 +46,6 @@ public class AdminDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return admin.isActive();
+        return estoquista.isActive();
     }
 }

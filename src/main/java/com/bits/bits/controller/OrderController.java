@@ -26,7 +26,7 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Orders> getAllOrders(){ return orderRepository.findAll(); }
 
     @GetMapping("/{orderId}")

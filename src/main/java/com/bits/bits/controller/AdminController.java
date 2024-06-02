@@ -19,14 +19,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/admins")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private AdminRepository adminRepository;
@@ -44,6 +42,15 @@ public class AdminController {
             throw new UserNotFoundException();
         }
         return findAdmin;
+    }
+
+    @GetMapping("/email/{email}")
+    public Optional<AdminModel> getAdminByEmail(@PathVariable String email) {
+        Optional<AdminModel> admin = adminRepository.findAdminByEmail(email);
+        if (admin.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return admin;
     }
 
     @GetMapping("/{adminId}")
@@ -74,13 +81,16 @@ public class AdminController {
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateAdmin(@RequestBody AdminLoginDTO adminLoginDTO, HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(adminLoginDTO.getEmail(), adminLoginDTO.getPassword()));
-        
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute("admin", adminLoginDTO.getEmail());
-        response.setHeader("X-Auth-Token", httpSession.getId());
+        adminService.authenticateAdmin(adminLoginDTO, request, response);
+        return new ResponseEntity<>("Admin login successfully", HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>("Admin Login Successfully!.", HttpStatus.OK);
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+        if (httpSession != null) {
+            httpSession.invalidate();
+        }
+        return new ResponseEntity<>("Admin logged out successfully!", HttpStatus.OK);
     }
 }

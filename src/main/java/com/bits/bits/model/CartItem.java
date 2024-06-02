@@ -32,6 +32,7 @@ public class CartItem {
     private ProductModel product;
 
     @NotNull(message = "Quantity cannot be null.")
+    @Column(name = "quantity")
     private int quantity;
 
     @JsonIgnore

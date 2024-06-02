@@ -1,10 +1,8 @@
 package com.bits.bits.model;
 
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,21 +11,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "tb_admin")
+@Table(name = "tb_estoquista")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminModel {
+public class EstoquistaModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminId;
+    private Long estoquistaId;
 
     @Email(message = "Email must be in the right format")
     @NotBlank(message = "Email cannot be null")
     @Size(max = 255, message = "Attribute email can have a maximum of 255 characters")
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     @NotBlank(message = "Attribute name cannot be null")
@@ -37,7 +35,7 @@ public class AdminModel {
 
     @NotBlank(message = "Attribute CPF cannot be null")
     @Size(min = 14, message = "Attribute CPF must have a minimum of 14 characters")
-    @Column(name = "CPF", unique = true)
+    @Column(name = "CPF")
     private String cpf;
 
     @NotBlank(message = "Password cannot be null")

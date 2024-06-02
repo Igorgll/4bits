@@ -2,9 +2,9 @@ package com.bits.bits.util;
 
 public enum UserRoles {
 
-    ADMIN("admin"),
-    ESTOQUISTA("estoquista"),
-    USER("user");
+    ADMIN("ROLE_ADMIN"),
+    ESTOQUISTA("ROLE_ESTOQUISTA"),
+    USER("ROLE_USER");
 
     private String role;
 

@@ -1,13 +1,22 @@
 package com.bits.bits.service;
 
+import com.bits.bits.dto.AdminLoginDTO;
 import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.exceptions.UserNotFoundException;
 import com.bits.bits.model.AdminModel;
 import com.bits.bits.repository.AdminRepository;
+import com.bits.bits.util.UserRoles;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +30,9 @@ public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     public Optional<AdminModel> adminSignUp(AdminModel admin) {
         Optional<AdminModel> findAdmin = adminRepository.findAdminByEmail(admin.getEmail());
 
@@ -33,10 +45,22 @@ public class AdminService {
         String senhaCriptografada = criptografar.encode(admin.getPassword());
         admin.setPassword(senhaCriptografada);
 
+        admin.setGroup(UserRoles.ADMIN.getRole());
         admin.setActive(true);
         LOGGER.info("Admin successfully registered");
 
         return Optional.of(adminRepository.save(admin));
+    }
+
+    public void authenticateAdmin(AdminLoginDTO adminLoginDTO, HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(adminLoginDTO.getEmail(), adminLoginDTO.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("admin", adminLoginDTO.getEmail());
+        response.setHeader("X-Auth-Token", httpSession.getId());
+
+        LOGGER.info("Session created successfully, token: {}", httpSession.getId());
     }
 
     public ResponseEntity<AdminModel> changeIsAdminActive(Long adminId, boolean isActive) {
@@ -70,4 +94,5 @@ public class AdminService {
         }
         return ResponseEntity.badRequest().build();
     }
+
 }
