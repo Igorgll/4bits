@@ -5,7 +5,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import com.bits.bits.service.CustomUserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -14,9 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -49,18 +45,24 @@ public class BasicSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/admins/login",
-                                "/api/v1/orders/all",
-                                "/api/v1/orders/updateStatus/{orderId}",
+                                "/api/v1/estoquistas/isEstoquistaActive/{estoquistaId}/{isActive}",
                                 "/api/v1/products/createProduct",
                                 "/api/v1/products/isProductActive/status",
                                 "/api/v1/products/updateProduct/{productId}")
                         .hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/api/v1/estoquistas/updateEstoquista/{estoquistaId}",
+                                "/api/v1/orders/all",
+                                "/api/v1/orders/updateStatus/{orderId}",
+                                "api/v1/estoquistas/login")
+                        .hasAnyAuthority("ROLE_ESTOQUISTA")
                         .requestMatchers(
                                 "/h2-console/**",
                                 "/api/v1/orders/{orderId}",
                                 "/api/v1/orders/create",
                                 "/api/v1/users/**",
                                 "/api/v1/admins/signup",
+                                "/api/v1/estoquistas/signup",
                                 "/api/v1/products/all",
                                 "/api/v1/products/productId/{productId}",
                                 "/api/v1/products/productName/{productName}",

@@ -1,6 +1,9 @@
 package com.bits.bits.service;
 
+import com.bits.bits.model.EstoquistaModel;
+import com.bits.bits.repository.EstoquistaRepository;
 import com.bits.bits.security.AdminDetails;
+import com.bits.bits.security.EstoquistaDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +24,9 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EstoquistaRepository estoquistaRepository;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AdminModel admin = adminRepository.findAdminByEmail(email).orElse(null);
@@ -31,6 +37,11 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         UserModel user = userRepository.findUserByEmail(email).orElse(null);
         if (user != null) {
             return new com.bits.bits.security.UserDetails(user);
+        }
+
+        EstoquistaModel estoquista = estoquistaRepository.findEstoquistaByEmail(email).orElse(null);
+        if (estoquista != null) {
+            return new EstoquistaDetails(estoquista);
         }
 
         throw new UsernameNotFoundException("User not found with email: " + email);

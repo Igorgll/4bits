@@ -26,29 +26,35 @@ public class UserAddressModel {
 
     @NotBlank(message = "CEP cannot be null")
     @Size(max = 9, message = "CEP has a 9 character limit")
+    @Column(name = "CEP")
     private String cep;
 
     @NotBlank(message = "Logradouro cannot be null")
     @Size(max = 255, message = "Logradouro has a 255 limit character")
+    @Column(name = "logradouro")
     private String logradouro;
 
     @NotBlank(message = "Numero cannot be null")
     @Size(max = 8, message = "Numero has a 8 character limit")
+    @Column(name = "numero")
     private String numero;
 
     @Size(max = 50, message = "Complemento has a 50 character limit")
+    @Column(name = "complemento")
     private String complemento;
 
     @NotBlank(message = "Bairro cannot be null")
     @Size(max = 255, message = "Bairro has a 255 character limit")
+    @Column(name = "bairro")
     private String bairro;
 
     @NotBlank(message = "Cidade cannot be null")
     @Size(max = 255, message = "Cidade has a 255 character limit")
+    @Column(name = "localidade")
     private String localidade;
 
     @NotBlank(message = "UF cannot be null")
     @Size(max = 2, message = "UF has a 2 character limit")
+    @Column(name = "UF")
     private String uf;
-
 }

@@ -32,12 +32,15 @@ public class Orders {
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "order_date")
     private Date orderDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private OrderStatus status;
 
     @NotNull(message = "Total amount cannot be null")
+    @Column(name = "total_amount")
     private double totalAmount;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
