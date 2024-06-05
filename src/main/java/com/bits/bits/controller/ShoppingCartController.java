@@ -36,6 +36,16 @@ public class ShoppingCartController {
         shoppingCartService.addProductToShoppingCart(productId, quantity);
     }
 
+    @PatchMapping("/increaseItem/{shoppingCartId}/{productId}")
+    public void increaseItemQuantity(@PathVariable Long shoppingCartId, @PathVariable Long productId) {
+        shoppingCartService.increaseItemQuantity(shoppingCartId, productId);
+    }
+
+    @PatchMapping("/decreaseItem/{shoppingCartId}/{productId}")
+    public void decreaseItemQuantity(@PathVariable Long shoppingCartId, @PathVariable Long productId) {
+        shoppingCartService.decreaseItemQuantity(shoppingCartId, productId);
+    }
+
     @DeleteMapping("/removeItem/{shoppingCartId}/{productId}")
     public void removeItemFromShoppingCart(@PathVariable Long shoppingCartId, @PathVariable Long productId, @RequestParam int quantity){
         shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId, quantity);
