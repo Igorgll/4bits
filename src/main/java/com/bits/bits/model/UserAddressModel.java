@@ -34,7 +34,7 @@ public class UserAddressModel {
     @Column(name = "logradouro")
     private String logradouro;
 
-    @NotBlank(message = "Numero cannot be null")
+    //@NotBlank(message = "Numero cannot be null")
     @Size(max = 8, message = "Numero has a 8 character limit")
     @Column(name = "numero")
     private String numero;

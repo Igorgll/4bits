@@ -12,6 +12,7 @@ import com.bits.bits.util.UserRoles;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.h2.engine.User;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +47,7 @@ public class UserService {
 
         AddressDTO addressDTO = viaCEPService.findAddress(cep);
 
-        UserAddressModel deliveryAddress = new UserAddressModel();
-        deliveryAddress.setCep(addressDTO.getCep());
-        deliveryAddress.setLogradouro(addressDTO.getLogradouro());
-        deliveryAddress.setBairro(addressDTO.getBairro());
-        deliveryAddress.setLocalidade(addressDTO.getLocalidade());
-        deliveryAddress.setUf(addressDTO.getUf());
-        deliveryAddress.setNumero(addressDTO.getNumero());
-        deliveryAddress.setComplemento(addressDTO.getComplemento());
+        UserAddressModel deliveryAddress = getUserAddressModel(addressDTO, user);
 
         if (user.getUserAddress() == null) {
             user.setUserAddress(new ArrayList<>());
@@ -63,6 +57,23 @@ public class UserService {
 
         userRepository.save(user);
 
+    }
+
+    //metodo que faz o tratamento dos dados pegos na via cep (passa ao endereço)
+    private static UserAddressModel getUserAddressModel(AddressDTO addressDTO, UserModel user) {
+        UserAddressModel deliveryAddress = new UserAddressModel();
+        deliveryAddress.setCep(addressDTO.getCep());
+        deliveryAddress.setLogradouro(addressDTO.getLogradouro());
+        deliveryAddress.setBairro(addressDTO.getBairro());
+        deliveryAddress.setLocalidade(addressDTO.getLocalidade());
+        deliveryAddress.setUf(addressDTO.getUf());
+        //campos faltantes
+        deliveryAddress.setNumero(addressDTO.getNumero());
+        deliveryAddress.setComplemento(addressDTO.getComplemento());
+
+        //aqui passa o modelo de usuario para o delivery address
+        deliveryAddress.setUserModel(user);
+        return deliveryAddress;
     }
 
     @Transactional
