@@ -42,7 +42,7 @@ public class ShoppingCartService {
 
             boolean itemFound = false;
             for (CartItem item : shoppingCart.getItems()) {
-                if (item.getProduct().equals(product)) {
+                if (item.getProduct().getProductId() == (productId)) {
                     item.setQuantity(item.getQuantity() + quantity);
                     cartItemRepository.save(item);
                     itemFound = true;
@@ -62,6 +62,54 @@ public class ShoppingCartService {
             shoppingCartRepository.save(shoppingCart);
         } else {
             LOGGER.error("product with id: {}, not found", productId);
+        }
+    }
+
+    public void increaseItemQuantity(Long shoppingCartId, Long productId) {
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findById(shoppingCartId);
+        if (cartOptional.isPresent()) {
+            ShoppingCart shoppingCart = cartOptional.get();
+            CartItem itemToIncrease = shoppingCart.getItems().stream()
+                    .filter(item -> item.getProduct().getProductId() == (productId))
+                    .findFirst().orElse(null);
+
+            if (itemToIncrease != null) {
+                itemToIncrease.setQuantity(itemToIncrease.getQuantity() + 1);
+                cartItemRepository.save(itemToIncrease);
+                LOGGER.info("Quantity of product with id: {} increased by 1", productId);
+                shoppingCartRepository.save(shoppingCart);
+            } else {
+                LOGGER.warn("Product with id: {} not found in cart", productId);
+            }
+        } else {
+            LOGGER.error("Shopping cart with id: {} not found", shoppingCartId);
+        }
+    }
+
+    public void decreaseItemQuantity(Long shoppingCartId, Long productId) {
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findById(shoppingCartId);
+        if (cartOptional.isPresent()) {
+            ShoppingCart shoppingCart = cartOptional.get();
+            CartItem itemToDecrease = shoppingCart.getItems().stream()
+                    .filter(item -> item.getProduct().getProductId() == (productId))
+                    .findFirst().orElse(null);
+
+            if (itemToDecrease != null) {
+                if (itemToDecrease.getQuantity() > 1) {
+                    itemToDecrease.setQuantity(itemToDecrease.getQuantity() - 1);
+                    cartItemRepository.save(itemToDecrease);
+                    LOGGER.info("Quantity of product with id: {} decreased by 1", productId);
+                } else {
+                    shoppingCart.getItems().remove(itemToDecrease);
+                    cartItemRepository.delete(itemToDecrease);
+                    LOGGER.info("Product with id: {} removed from cart", productId);
+                }
+                shoppingCartRepository.save(shoppingCart);
+            } else {
+                LOGGER.warn("Product with id: {} not found in cart", productId);
+            }
+        } else {
+            LOGGER.error("Shopping cart with id: {} not found", shoppingCartId);
         }
     }
 
