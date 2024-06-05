@@ -43,31 +43,20 @@ public class BasicSecurityConfig {
                 .headers(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/v1/admins/login",
-                                "/api/v1/estoquistas/isEstoquistaActive/{estoquistaId}/{isActive}",
-                                "/api/v1/products/createProduct",
-                                "/api/v1/products/isProductActive/status",
-                                "/api/v1/products/updateProduct/{productId}")
+                        .requestMatchers("/api/v1/admins/login")
                         .hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(
-                                "/api/v1/estoquistas/updateEstoquista/{estoquistaId}",
-                                "/api/v1/orders/all",
-                                "/api/v1/orders/updateStatus/{orderId}",
-                                "api/v1/estoquistas/login")
+
+                        .requestMatchers("api/v1/estoquistas/login")
                         .hasAnyAuthority("ROLE_ESTOQUISTA")
                         .requestMatchers(
                                 "/h2-console/**",
-                                "/api/v1/orders/{orderId}",
-                                "/api/v1/orders/create",
+                                "/api/v1/orders/**",
                                 "/api/v1/users/**",
                                 "/api/v1/admins/signup",
                                 "/api/v1/estoquistas/signup",
-                                "/api/v1/products/all",
-                                "/api/v1/products/productId/{productId}",
-                                "/api/v1/products/productName/{productName}",
-                                "/api/v1/products/productImage/{productId}",
-                                "/api/v1/cart/**")
+                                "/api/v1/products/**",
+                                "/api/v1/cart/**",
+                                "/api/v1/estoquistas/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated())
