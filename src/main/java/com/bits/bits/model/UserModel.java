@@ -33,7 +33,7 @@ public class UserModel {
 
     @NotBlank(message = "CPF field cannot be null")
     @Size(min = 14, message = "CPF must have a minimum of 14 characters")
-    @Column(name = "CPF")
+    @Column(name = "CPF", unique = true)
     private String cpf;
 
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.MERGE)

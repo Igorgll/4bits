@@ -51,4 +51,8 @@ public class ShoppingCartController {
         shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId, quantity);
     }
 
+    @DeleteMapping("/clearCart/{shoppingCartId}")
+    public void clearShoppingCart(@PathVariable Long shoppingCartId) {
+        shoppingCartService.clearShoppingCart(shoppingCartId);
+    }
 }

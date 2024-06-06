@@ -6,6 +6,7 @@ import com.bits.bits.model.ShoppingCart;
 import com.bits.bits.repository.CartItemRepository;
 import com.bits.bits.repository.ProductRepository;
 import com.bits.bits.repository.ShoppingCartRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,6 +137,21 @@ public class ShoppingCartService {
             }
         } else {
             LOGGER.error("Shopping cart with id: {} not found", shoppingCartId);
+        }
+    }
+
+    @Transactional
+    public void clearShoppingCart(Long shoppingCartId) {
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findById(shoppingCartId);
+        if (shoppingCartOptional.isPresent()) {
+            ShoppingCart shoppingCart = shoppingCartOptional.get();
+            for (CartItem item : shoppingCart.getItems()) {
+                cartItemRepository.delete(item);
+            }
+            shoppingCart.getItems().clear();
+            shoppingCartRepository.save(shoppingCart);
+        } else {
+            throw new RuntimeException("Shopping Cart not found with id: " + shoppingCartId);
         }
     }
 }
