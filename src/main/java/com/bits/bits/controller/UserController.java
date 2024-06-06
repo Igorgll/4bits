@@ -53,7 +53,8 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody AddressDTO addressDTO) {
 
-        userService.addDeliveryAddress(userId, addressDTO.getCep());
+        //até aqui os dados do json são passados
+        userService.addDeliveryAddress(userId, addressDTO);
         return new ResponseEntity<>("Delivery address added successfully", HttpStatus.OK);
     }
 

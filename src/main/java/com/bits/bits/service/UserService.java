@@ -41,13 +41,16 @@ public class UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public void addDeliveryAddress(Long userId, String cep) {
+    public void addDeliveryAddress(Long userId, AddressDTO address) {
         UserModel user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
 
-        AddressDTO addressDTO = viaCEPService.findAddress(cep);
+        //até aqui dados são passados normalmente
+        AddressDTO addressDTO = viaCEPService.findAddress(address.getCep());
 
         UserAddressModel deliveryAddress = getUserAddressModel(addressDTO, user);
+        deliveryAddress.setComplemento(address.getComplemento());
+        deliveryAddress.setNumero(address.getNumero());
 
         if (user.getUserAddress() == null) {
             user.setUserAddress(new ArrayList<>());
