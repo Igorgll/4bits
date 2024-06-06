@@ -9,6 +9,8 @@ import com.bits.bits.repository.OrderRepository;
 import com.bits.bits.repository.ShoppingCartRepository;
 import com.bits.bits.util.OrderStatus;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.Date;
 
 @Service
 public class OrderService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartService.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -47,14 +51,14 @@ public class OrderService {
         Orders savedOrder = orderRepository.save(order);
 
         for (CartItem item : shoppingCart.getItems()) {
-            item.setOrder(order);
+            item.setOrder(savedOrder);
             cartItemRepository.save(item);
+            LOGGER.info("Item associado à ordem: {}", item);
         }
 
-        // clear shoppingCart
-        shoppingCart.getItems().clear();
         shoppingCartRepository.save(shoppingCart);
 
+        LOGGER.info("Ordem criada com sucesso: {}", savedOrder);
         return savedOrder;
     }
 

@@ -18,6 +18,14 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shoppingCartId;
 
-    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "ShoppingCart{" +
+                "shoppingCartId=" + shoppingCartId +
+                ", items=" + items +
+                '}';
+    }
 }
