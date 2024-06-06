@@ -31,17 +31,23 @@ public class ShoppingCartService {
 
     private ShoppingCart shoppingCart;
 
+    @Transactional
     public void addProductToShoppingCart(Long productId, int quantity) {
-        if (shoppingCart == null) {
+        // Carregar o carrinho de compras existente ou criar um novo se não existir
+        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findById(1L); // Supondo que o ID do carrinho é 1
+        if (optionalShoppingCart.isPresent()) {
+            shoppingCart = optionalShoppingCart.get();
+        } else {
             shoppingCart = new ShoppingCart();
             shoppingCartRepository.save(shoppingCart);
         }
 
+        // Carregar o produto
         ProductModel product = productRepository.findById(productId).orElse(null);
         if (product != null) {
-            LOGGER.info("product found: {}", product);
-
             boolean itemFound = false;
+
+            // Verificar se o item já existe no carrinho
             for (CartItem item : shoppingCart.getItems()) {
                 if (item.getProduct().getProductId() == (productId)) {
                     item.setQuantity(item.getQuantity() + quantity);
@@ -51,6 +57,7 @@ public class ShoppingCartService {
                 }
             }
 
+            // Se o item não foi encontrado, adicionar um novo item ao carrinho
             if (!itemFound) {
                 CartItem newCartItem = new CartItem();
                 newCartItem.setProduct(product);
@@ -58,11 +65,11 @@ public class ShoppingCartService {
                 newCartItem.setShoppingCart(shoppingCart);
                 cartItemRepository.save(newCartItem);
                 shoppingCart.getItems().add(newCartItem);
-                LOGGER.info("CartItem successfully added: {}", newCartItem);
             }
+
             shoppingCartRepository.save(shoppingCart);
         } else {
-            LOGGER.error("product with id: {}, not found", productId);
+            throw new RuntimeException("Product with id: " + productId + " not found");
         }
     }
 
