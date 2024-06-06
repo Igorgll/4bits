@@ -32,6 +32,9 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public Optional<Orders> getOrderById(@PathVariable Long orderId){ return orderRepository.findById(orderId); }
 
+    @GetMapping("userId/{userId}")
+    public Optional<Orders> getOrderByOrderIdAndUserId(@PathVariable Long userId) { return orderRepository.findByUserUserId(userId); }
+
     @PostMapping("/create")
     public Orders createOrder(@RequestParam Long userId, @RequestParam Long shoppingCartId) {
         UserModel user = userRepository.findById(userId)
