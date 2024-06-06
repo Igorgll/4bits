@@ -2,6 +2,7 @@ package com.bits.bits.service;
 
 import com.bits.bits.dto.AddressDTO;
 import com.bits.bits.dto.AdminLoginDTO;
+import com.bits.bits.dto.ClientDTO;
 import com.bits.bits.dto.UserLoginDTO;
 import com.bits.bits.exceptions.CannotAccessException;
 import com.bits.bits.model.BillingAddressModel;
@@ -16,6 +17,7 @@ import org.h2.engine.User;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,6 +63,35 @@ public class UserService {
 
         userRepository.save(user);
 
+    }
+
+    public ResponseEntity<UserModel> updateUser(ClientDTO user, Long userId){
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Optional<UserModel> findUser = userRepository.findById(userId);
+
+        if(findUser.isPresent()) {
+            UserModel existingUser = findUser.get();
+
+            if (user.getEmail() != null) {
+                existingUser.setEmail(user.getEmail());
+            }
+            if (user.getName() != null) {
+                existingUser.setName(user.getName());
+            }
+            if (user.getCpf() != null) {
+                existingUser.setCpf(user.getCpf());
+            }
+            if (user.getGroup() != null) {
+                existingUser.setGroup(user.getGroup());
+            }
+            if (user.getPassword() != null) {
+                existingUser.setPassword(encoder.encode(user.getPassword()));
+            }
+
+            return ResponseEntity.ok(userRepository.save(existingUser));
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     //metodo que faz o tratamento dos dados pegos na via cep (passa ao endereço)

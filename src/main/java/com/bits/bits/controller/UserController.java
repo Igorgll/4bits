@@ -1,6 +1,7 @@
 package com.bits.bits.controller;
 
 import com.bits.bits.dto.AddressDTO;
+import com.bits.bits.dto.ClientDTO;
 import com.bits.bits.dto.UserLoginDTO;
 import com.bits.bits.model.UserModel;
 import com.bits.bits.repository.UserRepository;
@@ -9,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
+import org.h2.engine.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,12 @@ public class UserController {
     public ResponseEntity<Optional<UserModel>> getUserByEmail(@Valid @PathVariable String email){
         Optional<UserModel> user = userRepository.findUserByEmail(email);
         return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/updateUser/{userId}")
+    public ResponseEntity<UserModel> updateUser(@PathVariable Long userId, @Valid @RequestBody ClientDTO user) {
+        UserModel updateUser = userService.updateUser(user, userId).getBody();
+        return ResponseEntity.ok(updateUser);
     }
 
     @PostMapping("/createUser")
